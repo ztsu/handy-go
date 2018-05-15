@@ -7,29 +7,28 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+// Request is a type alias for events.APIGatewayProxyRequest
 type Request events.APIGatewayProxyRequest
 
+// Response is a type alias for events.APIGatewayProxyResponse
 type Response events.APIGatewayProxyResponse
 
-type Deck struct {
+type deck struct {
 	Name  string
-	Cards []Card
+	Cards []card
 }
 
-type Card struct {
+type card struct {
 	Word        string
 	Translation string
 	IPA         string
 }
 
-
-
-func HandleRequest(ctx context.Context, event Request) (Response, error) {
-
-
-	deck := Deck{
+// HandleRequest handles the Request req
+func HandleRequest(ctx context.Context, req Request) (Response, error) {
+	deck := deck{
 		Name: "",
-		Cards: []Card{
+		Cards: []card{
 			{"handy", "удобный", "ˈhændɪ"},
 		},
 	}
