@@ -27,7 +27,7 @@ type card struct {
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
 	deck := deck{
-		Name: "",
+		Name: "Test name 1",
 		Cards: []card{
 			{"handy", "удобный", "ˈhændɪ"},
 		},
