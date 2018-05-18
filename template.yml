@@ -7,9 +7,10 @@ Resources:
       Handler: handy
       Runtime: go1.x
       Tracing: Active
+      CodeUri: ./
       Events:
         GetEvent:
           Type: Api
           Properties:
             Path: /decks
-            Method: get
+            Method: GET

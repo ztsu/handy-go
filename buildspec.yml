@@ -23,9 +23,10 @@ phases:
   build:
     commands:
       - go build -o handy
-      - ls
-      - aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged.yml 2>&1
+      - aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
 
 artifacts:
+  type: zip
   files:
-  - packaged.yml
+    - template.yml
+    - packaged-template.yml
