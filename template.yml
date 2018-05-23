@@ -1,44 +1,40 @@
+---
 AWSTemplateFormatVersion: 2010-09-09
-
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
-
   HandyDecksApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: prod
+      StageName: Prod
+      Cors: "'*'"
       DefinitionBody:
-        swagger: 2.0
-        info:
-          title:
-            Ref: AWS::StackName
-        paths:
-          "/decks":
-            get:
-              x-amazon-apigateway-integration:
-                httpMethod: GET
-                type: aws_proxy
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${HandyGoFunction.Arn}/invocations
-              responses: {}
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          # Replace <bucket> with your bucket name
+          Parameters:
+            Location: s3://handy-go/swagger.yml
 
   HandyGoFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: handy
       Runtime: go1.x
-      Tracing: Active
       CodeUri: ./
       Events:
-        GetEvent:
+        ProxyApiRoot:
           Type: Api
           Properties:
-            Path: /decks
-            Method: GET
-            RestApiId:
-              Ref: HandyDecksApi
+            RestApiId: !Ref HandyDecksApi
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HandyDecksApi
+            Path: /{proxy+}
+            Method: ANY
 
 Outputs:
   ApiURL:
-    Value: !Sub "https://${HandyDecksApi}.execute-api.${AWS::Region}.amazonaws.com/prod/decks"
+    Value: !Sub "https://${HandyDecksApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
