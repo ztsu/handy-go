@@ -1,7 +1,29 @@
 AWSTemplateFormatVersion: 2010-09-09
+
 Transform: AWS::Serverless-2016-10-31
+
 Resources:
-  handy:
+
+  HandyDecksApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          title:
+            Ref: AWS::StackName
+        paths:
+          "/decks":
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: GET
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${HandyGoFunction.Arn}/invocations
+              responses: {}
+
+  HandyGoFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: handy
@@ -14,3 +36,9 @@ Resources:
           Properties:
             Path: /decks
             Method: GET
+            RestApiId:
+              Ref: HandyDecksApi
+
+Outputs:
+  ApiURL:
+    Value: !Sub "https://${HandyDecksApi}.execute-api.${AWS::Region}.amazonaws.com/prod/decks"
