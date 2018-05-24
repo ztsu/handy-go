@@ -9,9 +9,8 @@ Resources:
       StageName: Prod
       Cors: "'*'"
       DefinitionBody:
-        'Fn::Transform':
+        Transform:
           Name: 'AWS::Include'
-          # Replace <bucket> with your bucket name
           Parameters:
             Location: s3://handy-go/swagger.yml
 
