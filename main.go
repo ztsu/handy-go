@@ -24,6 +24,10 @@ type card struct {
 	IPA         string
 }
 
+var cors = map[string]string{
+	"Access-Control-Allow-Origin": "*",
+}
+
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
 
@@ -53,7 +57,7 @@ func HandleRequest(ctx context.Context, req Request) (Response, error) {
 		return Response{StatusCode: 500}, nil
 	}
 
-	return Response{StatusCode: 200, Body: string(b)}, nil
+	return Response{StatusCode: 200, Body: string(b), Headers: cors}, nil
 }
 
 func main() {
