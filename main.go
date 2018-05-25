@@ -26,14 +26,29 @@ type card struct {
 
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
-	deck := deck{
-		Name: "Test name 7",
+
+	decks := make([]deck, 2)
+
+	decks[0] = deck{
+		Name: "Test",
 		Cards: []card{
 			{"handy", "удобный", "ˈhændɪ"},
 		},
 	}
 
-	b, err := json.Marshal(deck)
+	decks[1] = deck{
+		Name: "Yes, English can be weird. It can be understood",
+		Cards: []card{
+			{"through", "через", "θruː"},
+			{"tough", "жесткий", "tʌf"},
+			{"thorough", "полный", "ˈθʌrə"},
+			{"thought", "мысль", "θɔːt"},
+			{"though", "хотя", "ðəʊ"},
+
+		},
+	}
+
+	b, err := json.Marshal(decks)
 	if err != nil {
 		return Response{StatusCode: 500}, nil
 	}
