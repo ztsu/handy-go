@@ -1,8 +1,9 @@
 ---
-swagger: 2.0
+swagger: "2.0"
 basePath: /prod
 info:
-  title: AwsSamExample
+  title: Handy API
+  version: "1.0.0"
 schemes:
   - https
 paths:
