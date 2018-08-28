@@ -4,6 +4,7 @@ Resources:
   handy:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: handy-go-decks
       Handler: handy
       Runtime: go1.x
       Tracing: Active
