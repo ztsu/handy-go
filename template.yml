@@ -1,17 +1,112 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
+
 Resources:
-  handy:
+  HandyDecksLambda:
+    DependsOn: HandyDecksExecutionRole
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: handy-go-decks
+      FunctionName: HandyDecks
       Handler: handy
       Runtime: go1.x
       Tracing: Active
       CodeUri: ./
-      Events:
-        GetEvent:
-          Type: Api
-          Properties:
-            Path: /decks
-            Method: GET
+      Role: !GetAtt HandyDecksExecutionRole.Arn
+
+  HandyDecksExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service:
+            - "lambda.amazonaws.com"
+          Action:
+          - "sts:AssumeRole"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+  HandyApiInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:invokeFunction
+      FunctionName: !GetAtt HandyDecksLambda.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HandyApi}/*"
+
+  HandyApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Handy API
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  HandyApiDeployment:
+    DependsOn: HandyDecksMethodAny
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref HandyApi
+
+  HandyApiStageProd:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref HandyApiDeployment
+      RestApiId: !Ref HandyApi
+      StageName: Prod
+      Variables:
+        Stack: Prod
+
+  HandyDecksResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HandyApi
+      ParentId:
+        Fn::GetAtt:
+        - HandyApi
+        - RootResourceId
+      PathPart: "decks"
+
+  HandyDecksMethodAny:
+    DependsOn: HandyApiInvokePermission
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: ANY
+      ResourceId: !Ref HandyDecksResource
+      RestApiId: !Ref HandyApi
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+        - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
+        - lambdaArn: !GetAtt HandyDecksLambda.Arn
+
+  HandyApiDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: api.handy.zaibatsu.ru
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: !Sub "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/4b74b958-cb3f-4cda-afa6-b3d20a9256c6"
+
+  HandyApiRoute53Record:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: zaibatsu.ru.
+      RecordSet:
+        - Name: api.handy.zaibatsu.ru
+          Type: A
+          AliasTarget:
+            HostedZoneId: !GetAtt HandyRegionalDomain.RegionalHostedZoneId
+            DNSName: !GetAtt HandyRegionalDomain.RegionalDomainName
+
+  HandyRegionalDomain:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: http://s3.amazonaws.com/cloudformation-not-required/apigateway.regional-domain-endpoint.yaml
+      Parameters:
+        CustomApiGwDomainName: api.handy.zaibatsu.ru
