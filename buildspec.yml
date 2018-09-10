@@ -11,10 +11,15 @@ phases:
       - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
       - env
       - go get -u github.com/golang/lint/golint
+      - go get -u github.com/aws/aws-lambda-go/events
 
   pre_build:
     commands:
+      - pwd
+      - ls /go
+      - ls /go/bin
       - cd "/go/src/${PACKAGE}"
+      - go install ./...
       - go get -t ./...
       - golint -set_exit_status
       - go vet .
@@ -22,7 +27,9 @@ phases:
 
   build:
     commands:
-      - go build -o handy
+      - go build
+      - cp /go/bin/decks /go/bin/cards `pwd`
+      - ls
       - aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
 
 artifacts:

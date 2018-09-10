@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: HandyDecks
-      Handler: handy
+      Handler: decks
       Runtime: go1.x
       Tracing: Active
       CodeUri: ./
@@ -103,10 +103,3 @@ Resources:
           AliasTarget:
             HostedZoneId: !GetAtt HandyRegionalDomain.RegionalHostedZoneId
             DNSName: !GetAtt HandyRegionalDomain.RegionalDomainName
-
-  HandyRegionalDomain:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: http://s3.amazonaws.com/cloudformation-not-required/apigateway.regional-domain-endpoint.yaml
-      Parameters:
-        CustomApiGwDomainName: api.handy.zaibatsu.ru
