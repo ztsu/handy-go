@@ -36,14 +36,6 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HandyApi}/*"
 
-  HandyApi:
-    Type: AWS::ApiGateway::RestApi
-    Properties:
-      Name: Handy API
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-
   HandyApiDeployment:
     DependsOn: HandyDecksMethodAny
     Type: AWS::ApiGateway::Deployment
@@ -84,6 +76,14 @@ Resources:
         - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
         - lambdaArn: !GetAtt HandyDecksLambda.Arn
 
+  HandyApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Handy API
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
   HandyApiDomainName:
     Type: AWS::ApiGateway::DomainName
     Properties:
@@ -97,9 +97,9 @@ Resources:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneName: zaibatsu.ru.
-      RecordSet:
+      RecordSets:
         - Name: api.handy.zaibatsu.ru
           Type: A
           AliasTarget:
-            HostedZoneId: !GetAtt HandyRegionalDomain.RegionalHostedZoneId
-            DNSName: !GetAtt HandyRegionalDomain.RegionalDomainName
+            HostedZoneId: !GetAtt HandyApiDomainName.RegionalHostedZoneId
+            DNSName: !GetAtt HandyApiDomainName.RegionalDomainName
