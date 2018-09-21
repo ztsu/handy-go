@@ -10,7 +10,7 @@ Resources:
       Handler: decks
       Runtime: go1.x
       Tracing: Active
-      CodeUri: ./decks
+      CodeUri: .
       Role: !GetAtt HandyDecksExecutionRole.Arn
 
   HandyDecksExecutionRole:
