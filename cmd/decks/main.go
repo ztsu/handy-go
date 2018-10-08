@@ -14,9 +14,9 @@ type Request events.APIGatewayProxyRequest
 type Response events.APIGatewayProxyResponse
 
 type deck struct {
-	ID          uint
-	Name        string
-	TypeOfCards string
+	ID          uint	`json:"id"`
+	Name        string  `json:"name"`
+	TypeOfCards string  `json:"typeOfCards"`
 }
 
 var cors = map[string]string{
@@ -30,13 +30,13 @@ func HandleRequest(ctx context.Context, req Request) (Response, error) {
 	decks[0] = deck{
 		ID:          1,
 		Name:        "Test",
-		TypeOfCards: "Words",
+		TypeOfCards: "words",
 	}
 
 	decks[1] = deck{
 		ID:          2,
 		Name:        "Yes, English can be weird. It can be understood",
-		TypeOfCards: "Words",
+		TypeOfCards: "words",
 	}
 
 	b, err := json.Marshal(decks)
