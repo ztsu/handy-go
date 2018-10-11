@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/ztsu/handy-go/pkg/handy"
 )
 
 // Request is a type alias for events.APIGatewayProxyRequest
@@ -13,31 +14,14 @@ type Request events.APIGatewayProxyRequest
 // Response is a type alias for events.APIGatewayProxyResponse
 type Response events.APIGatewayProxyResponse
 
-type deck struct {
-	ID          uint	`json:"id"`
-	Name        string  `json:"name"`
-	TypeOfCards string  `json:"typeOfCards"`
-}
-
 var cors = map[string]string{
 	"Access-Control-Allow-Origin": "*",
 }
 
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
-	decks := make([]deck, 2)
 
-	decks[0] = deck{
-		ID:          1,
-		Name:        "Test",
-		TypeOfCards: "words",
-	}
-
-	decks[1] = deck{
-		ID:          2,
-		Name:        "Yes, English can be weird. It can be understood",
-		TypeOfCards: "words",
-	}
+	decks := handy.SampleDecks
 
 	b, err := json.Marshal(decks)
 	if err != nil {
