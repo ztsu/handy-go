@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/ztsu/handy-go/pkg/handy"
+	"github.com/ztsu/handy-go/internal/handy"
 )
 
 // Request is a type alias for events.APIGatewayProxyRequest
