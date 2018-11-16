@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/ztsu/handy-go/internal/handy"
+	"github.com/ztsu/handy-go/internal/store"
 )
 
 // Request is a type alias for events.APIGatewayProxyRequest
@@ -21,7 +21,7 @@ var cors = map[string]string{
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
 
-	cards := handy.SampleCards
+	cards := store.SampleCards
 
 	b, err := json.Marshal(cards)
 	if err != nil {

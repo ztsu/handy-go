@@ -1,4 +1,4 @@
-package handy
+package store
 
 type Deck struct {
 	UUID        UUID   `json:"uuid"`
@@ -7,8 +7,13 @@ type Deck struct {
 	TypeOfCards string `json:"typeOfCards"`
 }
 
+type userDecks struct {
+	UserID UUID   `json:"userId"`
+	Decks  []UUID `json:"decks"`
+}
+
 type DeckStore interface {
 	Get(UUID) (Deck, error)
 	Save(Deck) error
-	Delete(UUID) error
+	Delete(Deck) error
 }

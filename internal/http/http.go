@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
-	"github.com/ztsu/handy-go/internal/handy"
+	"github.com/ztsu/handy-go/internal/store"
 	"net/http"
 )
 
-func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) func (http.ResponseWriter, *http.Request) {
+func NewGetFormStoreHandler(s func (store.UUID) (interface{}, error)) func (http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
@@ -18,7 +18,7 @@ func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) func (http
 			return
 		}
 
-		entity, err := s(handy.UUID(id))
+		entity, err := s(store.UUID(id))
 		if err != nil {
 			w.WriteHeader(404)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
@@ -29,7 +29,7 @@ func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) func (http
 	}
 }
 
-func NewDeleteFormStoreHandler(s func (handy.UUID) error) func (http.ResponseWriter, *http.Request) {
+func NewDeleteFormStoreHandler(s func (store.UUID) error) func (http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
@@ -38,7 +38,7 @@ func NewDeleteFormStoreHandler(s func (handy.UUID) error) func (http.ResponseWri
 			return
 		}
 
-		err = s(handy.UUID(id))
+		err = s(store.UUID(id))
 		if err != nil {
 			w.WriteHeader(404)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
@@ -49,9 +49,9 @@ func NewDeleteFormStoreHandler(s func (handy.UUID) error) func (http.ResponseWri
 	}
 }
 
-func NewCreateTranslationHandler(repository handy.TranslationStore) func(http.ResponseWriter, *http.Request) {
+func NewCreateTranslationHandler(repository store.TranslationStore) func(http.ResponseWriter, *http.Request) {
 	return func (w http.ResponseWriter, r *http.Request) {
-		var tr handy.Translation
+		var tr store.Translation
 
 		err := json.NewDecoder(r.Body).Decode(&tr)
 		if err != nil {

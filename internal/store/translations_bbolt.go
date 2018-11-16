@@ -1,4 +1,4 @@
-package handy
+package store
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package handy
+package store
 
 type Card struct {
 	UUID     UUID   `json:"uuid"`

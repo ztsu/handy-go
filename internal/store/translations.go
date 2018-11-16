@@ -1,4 +1,4 @@
-package handy
+package store
 
 type Translation struct {
 	UUID        UUID   `json:"uuid"`

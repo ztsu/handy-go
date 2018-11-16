@@ -1,4 +1,4 @@
-package handy
+package store
 
 import (
 	"encoding/json"
@@ -27,3 +27,6 @@ func (id UUID) MarshalBinary() []byte {
 	return id[:]
 }
 
+func (id UUID) String() string {
+	return uuid.UUID(id).String()
+}
