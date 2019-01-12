@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: HandyDecks
-      Handler: decks
+      Handler: handy-lambda-decks
       Runtime: go1.x
       Tracing: Active
       CodeUri: .
@@ -18,7 +18,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: HandyCards
-      Handler: cards
+      Handler: handy-lambda-cards
       Runtime: go1.x
       Tracing: Active
       CodeUri: .
