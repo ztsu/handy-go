@@ -23,10 +23,9 @@ phases:
       - GOOS=linux GOOS=linux go install github.com/ztsu/handy-go/cmd/handy-lambda-decks github.com/ztsu/handy-go/cmd/handy-lambda-cards
       - cp /go/bin/handy-lambda-decks /go/bin/handy-lambda-cards `pwd`
       - ls -la
-      - aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
+      - aws cloudformation package --template-file deployments/cloudformation/template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
 
 artifacts:
   type: zip
   files:
-    - template.yml
     - packaged-template.yml
