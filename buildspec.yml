@@ -11,20 +11,16 @@ phases:
       - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
       - env
       - go get -u github.com/golang/lint/golint
-      - go get -u github.com/aws/aws-lambda-go/events
+      - go get -u github.com/aws/aws-lambda-go/events github.com/google/uuid go.etcd.io/bbolt
 
   pre_build:
     commands:
       - cd "/go/src/${PACKAGE}"
-      - go install ./...
-      - go get -t ./...
       - golint -set_exit_status
-      - go vet .
-      - go test .
 
   build:
     commands:
-      - GOOS=linux GOOS=linux go build
+      - GOOS=linux GOOS=linux go install github.com/ztsu/handy-go/cmd/handy-lambda-decks github.com/ztsu/handy-go/cmd/handy-lambda-cards
       - cp /go/bin/handy-lambda-decks /go/bin/handy-lambda-cards `pwd`
       - ls -la
       - aws cloudformation package --template-file template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
