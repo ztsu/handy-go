@@ -1,12 +1,11 @@
-package http
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
-	"github.com/ztsu/handy-go/internal/handy"
-	"github.com/ztsu/handy-go/internal/store"
+	"github.com/ztsu/handy-go"
 	"net/http"
 )
 
@@ -17,8 +16,8 @@ func NewCreateDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
-		userID := store.UUID(u)
-		deck := store.Deck{UserID: userID}
+		userID := handy.UUID(u)
+		deck := handy.Deck{UserID: userID}
 
 		json.NewDecoder(r.Body).Decode(&deck)
 
@@ -48,7 +47,7 @@ func NewDeleteDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.
 			return
 		}
 
-		err = s.DeleteDeck(store.UUID(u), store.UUID(id))
+		err = s.DeleteDeck(handy.UUID(u), handy.UUID(id))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))

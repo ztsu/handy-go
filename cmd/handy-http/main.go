@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi"
-	"github.com/ztsu/handy-go/internal/handy"
-	httpHandy "github.com/ztsu/handy-go/internal/http"
-	"github.com/ztsu/handy-go/internal/store"
+	"github.com/ztsu/handy-go"
+	handyBbolt "github.com/ztsu/handy-go/bbolt"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
@@ -19,12 +18,12 @@ func main() {
 
 	defer db.Close()
 
-	ts, err := store.NewTranslationsBboltStore(db)
+	ts, err := handyBbolt.NewTranslationsBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ds, err := store.NewDecksBboltStore(db)
+	ds, err := handyBbolt.NewDecksBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,27 +33,27 @@ func main() {
 	r := chi.NewRouter();
 
 	r.Route("/api", func (router chi.Router) {
-		router.Post("/decks", httpHandy.NewCreateDeckHandler(dd))
+		router.Post("/decks", NewCreateDeckHandler(dd))
 
-		router.Delete("/decks/{ID}", httpHandy.NewDeleteDeckHandler(dd))
+		router.Delete("/decks/{ID}", NewDeleteDeckHandler(dd))
 	})
 
 	r.Route("/int", func (r chi.Router) {
 		r.Get(
 			"/decks/{ID}",
-			httpHandy.NewGetFormStoreHandler(func(id store.UUID) (interface{}, error) { return ds.Get(id) }),
+			NewGetFormStoreHandler(func(id handy.UUID) (interface{}, error) { return ds.Get(id) }),
 		)
 
-		r.Post("/translations", httpHandy.NewCreateTranslationHandler(ts))
+		r.Post("/translations", NewCreateTranslationHandler(ts))
 
 		r.Get(
 			"/translations/{ID}",
-			httpHandy.NewGetFormStoreHandler(func(id store.UUID) (interface{}, error) { return ts.Get(id) }),
+			NewGetFormStoreHandler(func(id handy.UUID) (interface{}, error) { return ts.Get(id) }),
 		)
 
 		r.Delete(
 			"/translations/{ID}",
-			httpHandy.NewDeleteFormStoreHandler(func(id store.UUID) error { return ts.Delete(id) }),
+			NewDeleteFormStoreHandler(func(id handy.UUID) error { return ts.Delete(id) }),
 		)
 	})
 

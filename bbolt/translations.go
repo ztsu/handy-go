@@ -1,7 +1,8 @@
-package store
+package bbolt
 
 import (
 	"encoding/json"
+	"github.com/ztsu/handy-go"
 	"go.etcd.io/bbolt"
 )
 
@@ -31,8 +32,8 @@ func NewTranslationsBboltStore(db *bbolt.DB) (*TranslationsBboltStore, error) {
 	return store, nil
 }
 
-func (repository *TranslationsBboltStore) Get(uuid UUID) (Translation, error) {
-	tr := Translation{};
+func (repository *TranslationsBboltStore) Get(uuid handy.UUID) (handy.Translation, error) {
+	tr := handy.Translation{};
 
 	return tr, repository.db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(TranslationsBucketName)).Get(uuid.MarshalBinary())
@@ -41,13 +42,13 @@ func (repository *TranslationsBboltStore) Get(uuid UUID) (Translation, error) {
 	})
 }
 
-func (repository *TranslationsBboltStore) Delete(uuid UUID) error {
+func (repository *TranslationsBboltStore) Delete(uuid handy.UUID) error {
 	return repository.db.Update(func(tx *bbolt.Tx) error {
 		return tx.Bucket([]byte(TranslationsBucketName)).Delete(uuid.MarshalBinary())
 	})
 }
 
-func (repository *TranslationsBboltStore) Save(tr Translation) error {
+func (repository *TranslationsBboltStore) Save(tr handy.Translation) error {
 	return repository.db.Update(func(tx *bbolt.Tx) error {
 		b, err := json.Marshal(tr)
 		if err != nil {

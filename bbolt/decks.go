@@ -1,7 +1,8 @@
-package store
+package bbolt
 
 import (
 	"encoding/json"
+	"github.com/ztsu/handy-go"
 	"go.etcd.io/bbolt"
 )
 
@@ -37,8 +38,8 @@ func NewDecksBboltStore(db *bbolt.DB) (*DecksBboltStore, error) {
 	return store, nil
 }
 
-func (store *DecksBboltStore) Get(uuid UUID) (Deck, error) {
-	deck := Deck{};
+func (store *DecksBboltStore) Get(uuid handy.UUID) (handy.Deck, error) {
+	deck := handy.Deck{};
 
 	return deck, store.db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(DecksBucketName)).Get(uuid.MarshalBinary())
@@ -47,7 +48,7 @@ func (store *DecksBboltStore) Get(uuid UUID) (Deck, error) {
 	})
 }
 
-func appendDeckToUserDecks(ud []UUID, deckID UUID) []UUID {
+func appendDeckToUserDecks(ud []handy.UUID, deckID handy.UUID) []handy.UUID {
 	for _, id :=range ud {
 		if id == deckID {
 			return ud
@@ -57,7 +58,7 @@ func appendDeckToUserDecks(ud []UUID, deckID UUID) []UUID {
 	return append(ud, deckID)
 }
 
-func (store *DecksBboltStore) Save(deck Deck) error {
+func (store *DecksBboltStore) Save(deck handy.Deck) error {
 	return store.db.Update(func(tx *bbolt.Tx) error {
 		b, err := json.Marshal(deck)
 		if err != nil {
@@ -88,7 +89,7 @@ func (store *DecksBboltStore) Save(deck Deck) error {
 	})
 }
 
-func (store *DecksBboltStore) Delete(deck Deck) error {
+func (store *DecksBboltStore) Delete(deck handy.Deck) error {
 	return store.db.Update(func (tx *bbolt.Tx) error {
 		ud := userDecks{}
 		b := tx.Bucket([]byte(UserDecksBucketName)).Get(deck.UserID.MarshalBinary())
@@ -97,7 +98,7 @@ func (store *DecksBboltStore) Delete(deck Deck) error {
 			return err
 		}
 
-		tmp := []UUID{}
+		tmp := []handy.UUID{}
 		for _, id := range ud.Decks {
 			if deck.UUID != id {
 				tmp = append(tmp, id)
@@ -119,3 +120,9 @@ func (store *DecksBboltStore) Delete(deck Deck) error {
 		return tx.Bucket([]byte(DecksBucketName)).Delete(deck.UUID.MarshalBinary())
 	})
 }
+
+type userDecks struct {
+	UserID handy.UUID   `json:"userId"`
+	Decks  []handy.UUID `json:"decks"`
+}
+
