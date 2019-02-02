@@ -1,4 +1,4 @@
-package main
+package http
 
 import (
 	"encoding/json"
@@ -6,20 +6,20 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"github.com/ztsu/handy-go"
+	"github.com/ztsu/handy-go/http/middleware"
 	"net/http"
 )
 
-func NewCreateDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.Request) {
+func NewCreateDeckHandler(s *handy.UserService) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		u, err:= uuid.Parse(r.Header.Get("User-ID"))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-		}
-
-		userID := handy.UUID(u)
+		userID := middleware.GetUserID(r.Context())
 		deck := handy.Deck{UserID: userID}
 
-		json.NewDecoder(r.Body).Decode(&deck)
+		err := json.NewDecoder(r.Body).Decode(&deck)
+		if err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			fmt.Fprintf(w, "Error: %s", err)
+		}
 
 		err = s.CreateDeck(userID, deck)
 		if err != nil {
@@ -33,12 +33,9 @@ func NewCreateDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.
 	}
 }
 
-func NewDeleteDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.Request) {
+func NewDeleteDeckHandler(s *handy.UserService) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		u, err:= uuid.Parse(r.Header.Get("User-ID"))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-		}
+		userID := handy.UUID(middleware.GetUserID(r.Context()))
 
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
@@ -47,7 +44,7 @@ func NewDeleteDeckHandler(s *handy.UserService) func(http.ResponseWriter, *http.
 			return
 		}
 
-		err = s.DeleteDeck(handy.UUID(u), handy.UUID(id))
+		err = s.DeleteDeck(userID, handy.UUID(id))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))

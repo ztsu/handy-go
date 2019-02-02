@@ -52,9 +52,7 @@ func NewUserService(ds DeckStore) *UserService {
 }
 
 func (s *UserService) CreateDeck(userID UUID, deck Deck) error {
-	err := s.deckStore.Save(deck)
-
-	return err
+	return s.deckStore.Save(deck)
 }
 
 func (s *UserService) DeleteDeck(userID UUID, deckID UUID) error {

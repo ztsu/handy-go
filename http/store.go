@@ -1,4 +1,4 @@
-package main
+package http
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) func (http.ResponseWriter, *http.Request) {
+func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
@@ -29,7 +29,7 @@ func NewGetFormStoreHandler(s func (handy.UUID) (interface{}, error)) func (http
 	}
 }
 
-func NewDeleteFormStoreHandler(s func (handy.UUID) error) func (http.ResponseWriter, *http.Request) {
+func NewDeleteFormStoreHandler(s func (handy.UUID) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
@@ -46,27 +46,5 @@ func NewDeleteFormStoreHandler(s func (handy.UUID) error) func (http.ResponseWri
 		}
 
 		w.WriteHeader(http.StatusNoContent)
-	}
-}
-
-func NewCreateTranslationHandler(repository handy.TranslationStore) func(http.ResponseWriter, *http.Request) {
-	return func (w http.ResponseWriter, r *http.Request) {
-		var tr handy.Translation
-
-		err := json.NewDecoder(r.Body).Decode(&tr)
-		if err != nil {
-			w.WriteHeader(400)
-			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-			return
-		}
-
-		err = repository.Save(tr)
-		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-			return
-		}
-
-		json.NewEncoder(w).Encode(tr)
 	}
 }
