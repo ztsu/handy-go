@@ -48,13 +48,13 @@ func (ts *TranslationsBboltStore) Delete(uuid store.UUID) error {
 	})
 }
 
-func (ts *TranslationsBboltStore) Save(tr store.Translation) error {
+func (ts *TranslationsBboltStore) Save(tr *store.Translation) error {
 	return ts.db.Update(func(tx *bbolt.Tx) error {
 		b, err := json.Marshal(tr)
 		if err != nil {
 			return err
 		}
 
-		return tx.Bucket([]byte(TranslationsBucketName)).Put(tr.UUID.MarshalBinary(), b)
+		return tx.Bucket([]byte(TranslationsBucketName)).Put(tr.ID.MarshalBinary(), b)
 	})
 }

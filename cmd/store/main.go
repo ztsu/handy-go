@@ -17,12 +17,18 @@ func main() {
 
 	defer db.Close()
 
+
+	decks, err := bbolt.NewDecksBboltStore(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	translations, err := bbolt.NewTranslationsBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	decks, err := bbolt.NewDecksBboltStore(db)
+	users, err := bbolt.NewUserBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,23 +38,30 @@ func main() {
 	r.Route("/decks", func (r chi.Router) {
 		r.Get(
 			"/{ID}",
-			store.NewGetFromStoreHandler(store.GetDeck(decks)),
+			store.NewGetHandler(store.GetDeck(decks)),
 		)
 	})
 
 	r.Route("/translations", func(r chi.Router) {
 
-		r.Post("/", store.NewCreateTranslationHandler(translations))
+		r.Post("/", store.NewPostHandler(store.DecodeTranslation, store.PostTranslation(translations)))
 
 		r.Get(
 			"/{ID}",
-			store.NewGetFromStoreHandler(store.GetTranslation(translations)),
+			store.NewGetHandler(store.GetTranslation(translations)),
 		)
 
 		r.Delete(
 			"/{ID}",
-			store.NewDeleteFromStoreHandler(store.DeleteTranslation(translations)),
+			store.NewDeleteHandler(store.DeleteTranslation(translations)),
 		)
+	})
+
+
+	r.Route("/users", func(r chi.Router) {
+		r.Post("/", store.NewPostHandler(store.DecodeUser, store.PostUser(users)))
+
+		r.Put("/{ID}", store.NewPutHandler(store.DecodeUser, store.PutUser(users)))
 	})
 
 	addr := "0.0.0.0:8080"

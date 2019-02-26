@@ -70,7 +70,7 @@ func (ds *DecksBboltStore) Save(deck store.Deck) error {
 			return err
 		}
 
-		err = tx.Bucket([]byte(DecksBucketName)).Put(deck.UUID.MarshalBinary(), b)
+		err = tx.Bucket([]byte(DecksBucketName)).Put(deck.ID.MarshalBinary(), b)
 		if err != nil {
 			return err
 		}
@@ -83,7 +83,7 @@ func (ds *DecksBboltStore) Save(deck store.Deck) error {
 			return err
 		}
 
-		ud.Decks = appendDeckToUserDecks(ud.Decks, deck.UUID)
+		ud.Decks = appendDeckToUserDecks(ud.Decks, deck.ID)
 
 		udb, err := json.Marshal(ud)
 		if err != nil {
@@ -105,7 +105,7 @@ func (ds *DecksBboltStore) Delete(deck store.Deck) error {
 
 		tmp := []store.UUID{}
 		for _, id := range ud.Decks {
-			if deck.UUID != id {
+			if deck.ID != id {
 				tmp = append(tmp, id)
 			}
 		}
@@ -122,7 +122,7 @@ func (ds *DecksBboltStore) Delete(deck store.Deck) error {
 			return err
 		}
 
-		return tx.Bucket([]byte(DecksBucketName)).Delete(deck.UUID.MarshalBinary())
+		return tx.Bucket([]byte(DecksBucketName)).Delete(deck.ID.MarshalBinary())
 	})
 }
 
