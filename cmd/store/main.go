@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/ztsu/handy-go/store/bbolt"
 	store "github.com/ztsu/handy-go/store/http"
 	"log"
@@ -34,6 +35,8 @@ func main() {
 	}
 
 	r := chi.NewRouter();
+
+	r.Use(middleware.Logger)
 
 	r.Route("/decks", func (r chi.Router) {
 		r.Get(
