@@ -2,7 +2,7 @@ package bbolt
 
 import (
 	"encoding/json"
-	"github.com/ztsu/handy-go"
+	"github.com/ztsu/handy-go/store"
 	"go.etcd.io/bbolt"
 )
 
@@ -13,7 +13,7 @@ type TranslationsBboltStore struct {
 }
 
 func NewTranslationsBboltStore(db *bbolt.DB) (*TranslationsBboltStore, error) {
-	store := &TranslationsBboltStore{}
+	ts := &TranslationsBboltStore{}
 
 	err := db.Update(func(tx *bbolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(TranslationsBucketName))
@@ -27,29 +27,29 @@ func NewTranslationsBboltStore(db *bbolt.DB) (*TranslationsBboltStore, error) {
 		return nil, err
 	}
 
-	store.db = db
+	ts.db = db
 
-	return store, nil
+	return ts, nil
 }
 
-func (repository *TranslationsBboltStore) Get(uuid handy.UUID) (handy.Translation, error) {
-	tr := handy.Translation{};
+func (ts *TranslationsBboltStore) Get(uuid store.UUID) (store.Translation, error) {
+	tr := store.Translation{};
 
-	return tr, repository.db.View(func(tx *bbolt.Tx) error {
+	return tr, ts.db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(TranslationsBucketName)).Get(uuid.MarshalBinary())
 
 		return json.Unmarshal(b, &tr)
 	})
 }
 
-func (repository *TranslationsBboltStore) Delete(uuid handy.UUID) error {
-	return repository.db.Update(func(tx *bbolt.Tx) error {
+func (ts *TranslationsBboltStore) Delete(uuid store.UUID) error {
+	return ts.db.Update(func(tx *bbolt.Tx) error {
 		return tx.Bucket([]byte(TranslationsBucketName)).Delete(uuid.MarshalBinary())
 	})
 }
 
-func (repository *TranslationsBboltStore) Save(tr handy.Translation) error {
-	return repository.db.Update(func(tx *bbolt.Tx) error {
+func (ts *TranslationsBboltStore) Save(tr store.Translation) error {
+	return ts.db.Update(func(tx *bbolt.Tx) error {
 		b, err := json.Marshal(tr)
 		if err != nil {
 			return err
