@@ -62,4 +62,5 @@ type UserStore interface {
 	Add(*User) error
 	Get(original.UUID) (*User, error)
 	Save(*User) error
+	Delete(original.UUID) error
 }

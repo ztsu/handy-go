@@ -85,3 +85,14 @@ func (us *UserBoltStore) Save(u *store.User) error {
 		return tx.Bucket([]byte(UsersBucketName)).Put(key, value)
 	})
 }
+
+func (us *UserBoltStore) Delete(id uuid.UUID) error {
+	return us.db.Update(func(tx *bbolt.Tx) error {
+		key, err := id.MarshalBinary()
+		if err != nil {
+			return err
+		}
+
+		return tx.Bucket([]byte(UsersBucketName)).Delete(key)
+	})
+}

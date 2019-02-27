@@ -100,7 +100,7 @@ func NewGetHandler(s StoreGetFunc) http.HandlerFunc {
 
 func NewDeleteHandler(s StoreDeleteFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(chi.URLParam(r, "Identity"))
+		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))

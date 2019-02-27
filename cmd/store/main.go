@@ -64,6 +64,8 @@ func main() {
 		r.Post("/", store.NewPostHandler(store.DecodeUser, store.PostUser(users)))
 
 		r.Put("/{ID}", store.NewPutHandler(store.DecodeUser, store.PutUser(users)))
+
+		r.Delete("/{ID}", store.NewDeleteHandler(store.DeleteUser(users)))
 	})
 
 	addr := "0.0.0.0:8080"
