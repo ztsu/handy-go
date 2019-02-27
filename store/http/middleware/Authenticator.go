@@ -9,9 +9,9 @@ import (
 const UserIDKey = "userID"
 
 func Authenticator(next http.Handler) http.Handler {
-	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userIDStr := r.Header.Get("User-ID")
-		id, err:= uuid.Parse(userIDStr)
+		id, err := uuid.Parse(userIDStr)
 		if err != nil {
 			if userIDStr == "" {
 				w.WriteHeader(http.StatusUnauthorized)

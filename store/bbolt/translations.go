@@ -34,7 +34,7 @@ func NewTranslationsBboltStore(db *bbolt.DB) (*TranslationsBboltStore, error) {
 }
 
 func (ts *TranslationsBboltStore) Get(id uuid.UUID) (store.Translation, error) {
-	tr := store.Translation{};
+	tr := store.Translation{}
 
 	return tr, ts.db.View(func(tx *bbolt.Tx) error {
 		key, err := id.MarshalBinary()

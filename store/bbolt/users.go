@@ -35,7 +35,7 @@ func NewUserBboltStore(db *bbolt.DB) (*UserBboltStore, error) {
 }
 
 func (us *UserBboltStore) Get(id uuid.UUID) (*store.User, error) {
-	user := &store.User{};
+	user := &store.User{}
 
 	return user, us.db.View(func(tx *bbolt.Tx) error {
 		key, err := id.MarshalBinary()

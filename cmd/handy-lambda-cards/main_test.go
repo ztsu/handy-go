@@ -2,8 +2,8 @@ package main_test
 
 import "testing"
 import (
-	handy "github.com/ztsu/handy-go"
 	"github.com/stretchr/testify/assert"
+	handy "github.com/ztsu/handy-go"
 )
 
 func TestHandleRequest(t *testing.T) {

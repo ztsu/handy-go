@@ -45,7 +45,7 @@ func NewDecksBboltStore(db *bbolt.DB) (*DecksBboltStore, error) {
 }
 
 func (ds *DecksBboltStore) Get(id uuid.UUID) (store.Deck, error) {
-	deck := store.Deck{};
+	deck := store.Deck{}
 
 	return deck, ds.db.View(func(tx *bbolt.Tx) error {
 		key, err := id.MarshalBinary()
@@ -60,7 +60,7 @@ func (ds *DecksBboltStore) Get(id uuid.UUID) (store.Deck, error) {
 }
 
 func appendDeckToUserDecks(ud []uuid.UUID, deckID uuid.UUID) []uuid.UUID {
-	for _, id :=range ud {
+	for _, id := range ud {
 		if id == deckID {
 			return ud
 		}
@@ -112,7 +112,7 @@ func (ds *DecksBboltStore) Save(deck store.Deck) error {
 }
 
 func (ds *DecksBboltStore) Delete(deck store.Deck) error {
-	return ds.db.Update(func (tx *bbolt.Tx) error {
+	return ds.db.Update(func(tx *bbolt.Tx) error {
 		userKey, err := deck.UserID.MarshalBinary()
 		if err != nil {
 			return err
@@ -153,4 +153,3 @@ func (ds *DecksBboltStore) Delete(deck store.Deck) error {
 		return tx.Bucket([]byte(DecksBucketName)).Delete(deckKey)
 	})
 }
-

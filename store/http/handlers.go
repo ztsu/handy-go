@@ -9,9 +9,7 @@ import (
 	"net/http"
 )
 
-
 type DecodeFunc func(r *http.Request) (interface{}, error)
-
 
 type StorePostFunc func(interface{}) error
 
@@ -20,7 +18,6 @@ type StorePutFunc func(interface{}) error
 type StoreGetFunc func(uuid.UUID) (interface{}, error)
 
 type StoreDeleteFunc func(uuid.UUID) error
-
 
 func NewPostHandler(m DecodeFunc, s StorePostFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
