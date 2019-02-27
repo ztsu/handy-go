@@ -18,22 +18,22 @@ func (user *User) Identity() original.UUID {
 }
 
 type Card struct {
-	ID     UUID   `json:"id"`
-	DeckID UUID   `json:"deckId"`
+	ID     original.UUID    `json:"id"`
+	DeckID original.UUID    `json:"deckId"`
 	Type   string `json:"type"`
 	Viewed uint64 `json:"viewed"`
 	Opened uint64 `json:"opened"`
 }
 
 type Deck struct {
-	ID          UUID   `json:"id"`
-	UserID      UUID   `json:"userId"`
+	ID          original.UUID    `json:"id"`
+	UserID      original.UUID    `json:"userId"`
 	Name        string `json:"name"`
 	TypeOfCards string `json:"typeOfCards"`
 }
 
 type Translation struct {
-	ID          UUID   `json:"uuid"`
+	ID          original.UUID    `json:"uuid"`
 	From        string `json:"from"`
 	To          string `json:"to"`
 	Word        string `json:"word"`
@@ -42,20 +42,20 @@ type Translation struct {
 }
 
 type CardStore interface {
-	Get(UUID) (Card, error)
+	Get(original.UUID ) (Card, error)
 	Save(Card) error
 }
 
 type DeckStore interface {
-	Get(UUID) (Deck, error)
+	Get(original.UUID ) (Deck, error)
 	Save(Deck) error
 	Delete(Deck) error
 }
 
 type TranslationStore interface {
-	Get(UUID) (Translation, error)
+	Get(original.UUID ) (Translation, error)
 	Save(*Translation) error
-	Delete(UUID) error
+	Delete(original.UUID ) error
 }
 
 type UserStore interface {

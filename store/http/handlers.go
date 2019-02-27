@@ -17,9 +17,9 @@ type StorePostFunc func(interface{}) error
 
 type StorePutFunc func(interface{}) error
 
-type StoreGetFunc func(store.UUID) (interface{}, error)
+type StoreGetFunc func(uuid.UUID) (interface{}, error)
 
-type StoreDeleteFunc func(store.UUID) error
+type StoreDeleteFunc func(uuid.UUID) error
 
 
 func NewPostHandler(m DecodeFunc, s StorePostFunc) http.HandlerFunc {
@@ -90,7 +90,7 @@ func NewGetHandler(s StoreGetFunc) http.HandlerFunc {
 			return
 		}
 
-		entity, err := s(store.UUID(id))
+		entity, err := s(uuid.UUID(id))
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
@@ -110,7 +110,7 @@ func NewDeleteHandler(s StoreDeleteFunc) http.HandlerFunc {
 			return
 		}
 
-		err = s(store.UUID(id))
+		err = s(uuid.UUID(id))
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "Error: %s", err)

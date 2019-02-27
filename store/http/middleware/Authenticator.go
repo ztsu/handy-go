@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/ztsu/handy-go/store"
 	"net/http"
 )
 
@@ -22,21 +21,21 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "userID", store.UUID(id))
+		ctx := context.WithValue(r.Context(), "userID", uuid.UUID(id))
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func GetUserID(ctx context.Context) store.UUID {
-	var userID store.UUID
+func GetUserID(ctx context.Context) uuid.UUID {
+	var userID uuid.UUID
 
 	if ctx == nil {
 		return userID
 	}
 
-	if uid, ok := ctx.Value(UserIDKey).(store.UUID); ok {
-		return uid
+	if id, ok := ctx.Value(UserIDKey).(uuid.UUID); ok {
+		return id
 	}
 
 	return userID
