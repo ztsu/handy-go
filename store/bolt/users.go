@@ -1,4 +1,4 @@
-package bbolt
+package bolt
 
 import (
 	"encoding/json"
@@ -10,12 +10,12 @@ import (
 
 const UsersBucketName = "Users"
 
-type UserBboltStore struct {
+type UserBoltStore struct {
 	db *bbolt.DB
 }
 
-func NewUserBboltStore(db *bbolt.DB) (*UserBboltStore, error) {
-	ts := &UserBboltStore{}
+func NewUserBoltStore(db *bbolt.DB) (*UserBoltStore, error) {
+	ts := &UserBoltStore{}
 
 	err := db.Update(func(tx *bbolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(UsersBucketName))
@@ -34,7 +34,7 @@ func NewUserBboltStore(db *bbolt.DB) (*UserBboltStore, error) {
 	return ts, nil
 }
 
-func (us *UserBboltStore) Get(id uuid.UUID) (*store.User, error) {
+func (us *UserBoltStore) Get(id uuid.UUID) (*store.User, error) {
 	user := &store.User{}
 
 	return user, us.db.View(func(tx *bbolt.Tx) error {
@@ -49,7 +49,7 @@ func (us *UserBboltStore) Get(id uuid.UUID) (*store.User, error) {
 	})
 }
 
-func (us *UserBboltStore) Add(u *store.User) error {
+func (us *UserBoltStore) Add(u *store.User) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
 		key, err := u.ID.MarshalBinary()
 		if err != nil {
@@ -70,7 +70,7 @@ func (us *UserBboltStore) Add(u *store.User) error {
 	})
 }
 
-func (us *UserBboltStore) Save(u *store.User) error {
+func (us *UserBoltStore) Save(u *store.User) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
 		value, err := json.Marshal(u)
 		if err != nil {

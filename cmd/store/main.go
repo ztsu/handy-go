@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/ztsu/handy-go/store/bbolt"
+	"github.com/ztsu/handy-go/store/bolt"
 	store "github.com/ztsu/handy-go/store/http"
+	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
 )
@@ -18,17 +19,17 @@ func main() {
 
 	defer db.Close()
 
-	decks, err := bbolt.NewDecksBboltStore(db)
+	decks, err := bolt.NewDecksBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	translations, err := bbolt.NewTranslationsBboltStore(db)
+	translations, err := bolt.NewTranslationsBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	users, err := bbolt.NewUserBboltStore(db)
+	users, err := bolt.NewUserBoltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
