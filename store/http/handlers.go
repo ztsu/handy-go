@@ -9,6 +9,11 @@ import (
 	"net/http"
 )
 
+var (
+	ErrCantParseID  = NewJsonError("can't parse id", http.StatusBadRequest)
+	ErrUserNotFound = NewJsonError("user not found", http.StatusNotFound)
+)
+
 type DecodeFunc func(r *http.Request) (interface{}, error)
 
 type StorePostFunc func(interface{}) error
@@ -98,19 +103,18 @@ func NewGetHandler(s StoreGetFunc) http.HandlerFunc {
 	}
 }
 
-func NewDeleteHandler(s StoreDeleteFunc) http.HandlerFunc {
+func NewDeleteHandler(delete StoreDeleteFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		id, err := uuid.Parse(chi.URLParam(r, "ID"))
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf("Error: %s", err)))
+			ErrCantParseID.WriteTo(w)
 			return
 		}
 
-		err = s(uuid.UUID(id))
+		err = delete(id)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Error: %s", err)
+			ErrUserNotFound.WriteTo(w)
 			return
 		}
 
