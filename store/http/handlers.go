@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi"
@@ -23,6 +24,8 @@ type StorePutFunc func(interface{}) error
 type StoreGetFunc func(uuid.UUID) (interface{}, error)
 
 type StoreDeleteFunc func(uuid.UUID) error
+
+type GetIDFromContextFunc func(ctx context.Context) string
 
 func NewPostHandler(m DecodeFunc, s StorePostFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -103,10 +106,9 @@ func NewGetHandler(s StoreGetFunc) http.HandlerFunc {
 	}
 }
 
-func NewDeleteHandler(delete StoreDeleteFunc) http.HandlerFunc {
+func NewDeleteHandler(getID GetIDFromContextFunc, delete StoreDeleteFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		id, err := uuid.Parse(chi.URLParam(r, "ID"))
+		id, err := uuid.Parse(getID(r.Context()))
 		if err != nil {
 			ErrCantParseID.WriteTo(w)
 			return

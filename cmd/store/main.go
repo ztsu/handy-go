@@ -47,7 +47,6 @@ func main() {
 	})
 
 	r.Route("/translations", func(r chi.Router) {
-
 		r.Post("/", store.NewPostHandler(store.DecodeTranslation, store.PostTranslation(translations)))
 
 		r.Get(
@@ -57,16 +56,20 @@ func main() {
 
 		r.Delete(
 			"/{ID}",
-			store.NewDeleteHandler(store.DeleteTranslation(translations)),
+			store.NewDeleteHandler(store.GetID, store.DeleteTranslation(translations)),
 		)
 	})
 
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", store.NewPostHandler(store.DecodeUser, store.PostUser(users)))
 
-		r.Put("/{ID}", store.NewPutHandler(store.DecodeUser, store.PutUser(users)))
+		r.Route("/{ID}", func(r chi.Router) {
+			r.Use(store.QueryStringID("ID"))
 
-		r.Delete("/{ID}", store.NewDeleteHandler(store.DeleteUser(users)))
+			r.Put("/", store.NewPutHandler(store.DecodeUser, store.PutUser(users)))
+
+			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteUser(users)))
+		})
 	})
 
 	addr := "0.0.0.0:8080"
