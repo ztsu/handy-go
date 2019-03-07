@@ -42,7 +42,7 @@ func main() {
 	r.Route("/decks", func(r chi.Router) {
 		r.Get(
 			"/{ID}",
-			store.NewGetHandler(store.GetDeck(decks)),
+			store.NewGetHandler(store.GetID, store.GetDeck(decks)),
 		)
 	})
 
@@ -51,7 +51,7 @@ func main() {
 
 		r.Get(
 			"/{ID}",
-			store.NewGetHandler(store.GetTranslation(translations)),
+			store.NewGetHandler(store.GetID, store.GetTranslation(translations)),
 		)
 
 		r.Delete(
