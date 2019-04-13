@@ -22,7 +22,7 @@ phases:
     commands:
       - GOOS=linux GOOS=linux go install github.com/ztsu/handy-go/cmd/lambda-users
       - ls -la /go/bin/
-      - cp /go/bin/lamda-users `pwd`/handy-lambda-decks
+      - cp /go/bin/lambda-users `pwd`/handy-lambda-decks
       - ls -la
       - aws cloudformation package --template-file deployments/cloudformation/template.yml --s3-bucket ${S3_BUCKET} --output-template-file packaged-template.yml
 
