@@ -19,11 +19,6 @@ func main() {
 
 	defer db.Close()
 
-	decks, err := bolt.NewDecksBboltStore(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	translations, err := bolt.NewTranslationsBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
@@ -38,13 +33,6 @@ func main() {
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
-	r.Route("/decks", func(r chi.Router) {
-		r.Get(
-			"/{ID}",
-			store.NewGetHandler(store.GetID, store.GetDeck(decks)),
-		)
-	})
 
 	r.Route("/translations", func(r chi.Router) {
 		r.Post("/", store.NewPostHandler(store.DecodeTranslation, store.PostTranslation(translations)))
@@ -66,7 +54,9 @@ func main() {
 		r.Route("/{ID}", func(r chi.Router) {
 			r.Use(store.QueryStringID("ID"))
 
-			r.Put("/", store.NewPutHandler(store.DecodeUser, store.PutUser(users)))
+			r.Get("/", store.NewGetHandler(store.GetID, store.GetUser(users)))
+
+			r.Put("/", store.NewPutHandler(store.GetID, store.DecodeUser, store.PutUser(users)))
 
 			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteUser(users)))
 		})

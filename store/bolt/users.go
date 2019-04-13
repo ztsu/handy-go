@@ -2,7 +2,6 @@ package bolt
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"go.etcd.io/bbolt"
@@ -45,6 +44,10 @@ func (us *UserBoltStore) Get(id uuid.UUID) (*store.User, error) {
 
 		b := tx.Bucket([]byte(UsersBucketName)).Get(key)
 
+		if len(b) == 0 {
+			return store.ErrUserNotFound
+		}
+
 		return json.Unmarshal(b, user)
 	})
 }
@@ -58,7 +61,7 @@ func (us *UserBoltStore) Add(u *store.User) error {
 
 		b := tx.Bucket([]byte(UsersBucketName)).Get(key)
 		if len(b) != 0 {
-			return errors.New("user is exists")
+			return store.ErrUserAlreadyExists
 		}
 
 		value, err := json.Marshal(u)
@@ -72,12 +75,16 @@ func (us *UserBoltStore) Add(u *store.User) error {
 
 func (us *UserBoltStore) Save(u *store.User) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
-		value, err := json.Marshal(u)
+		key, err := u.ID.MarshalBinary()
 		if err != nil {
 			return err
 		}
 
-		key, err := u.ID.MarshalBinary()
+		if len(tx.Bucket([]byte(UsersBucketName)).Get(key)) == 0 {
+			return store.ErrUserNotFound
+		}
+
+		value, err := json.Marshal(u)
 		if err != nil {
 			return err
 		}
@@ -91,6 +98,10 @@ func (us *UserBoltStore) Delete(id uuid.UUID) error {
 		key, err := id.MarshalBinary()
 		if err != nil {
 			return err
+		}
+
+		if len(tx.Bucket([]byte(UsersBucketName)).Get(key)) == 0 {
+			return store.ErrUserNotFound
 		}
 
 		return tx.Bucket([]byte(UsersBucketName)).Delete(key)

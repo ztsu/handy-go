@@ -21,9 +21,9 @@ var cors = map[string]string{
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
 
-	cards := []store.Card{}
+	decks := []store.Deck{}
 
-	b, err := json.Marshal(cards)
+	b, err := json.Marshal(decks)
 	if err != nil {
 		return Response{StatusCode: 500}, nil
 	}

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"errors"
 	original "github.com/google/uuid"
 )
 
@@ -64,3 +65,8 @@ type UserStore interface {
 	Save(*User) error
 	Delete(original.UUID) error
 }
+
+var (
+	ErrUserAlreadyExists = errors.New("user already exists")
+	ErrUserNotFound      = errors.New("user not found")
+)

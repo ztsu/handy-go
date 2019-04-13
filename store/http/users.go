@@ -13,7 +13,7 @@ func DecodeUser(r *http.Request) (interface{}, error) {
 
 	err := json.NewDecoder(r.Body).Decode(u)
 	if err != nil {
-		return nil, err
+		return nil, ErrCantParseJson
 	}
 
 	return u, nil
@@ -22,17 +22,21 @@ func DecodeUser(r *http.Request) (interface{}, error) {
 func PostUser(users store.UserStore) StorePostFunc {
 	return func(data interface{}) error {
 		if user, ok := data.(*store.User); !ok {
-			return errors.New("not a user")
+			return errors.New("not a user") // TODO
 		} else {
 			return users.Add(user)
 		}
 	}
 }
 
+func GetUser(users store.UserStore) StoreGetFunc {
+	return func(id uuid.UUID) (interface{}, error) { return users.Get(id) }
+}
+
 func PutUser(users store.UserStore) StorePutFunc {
 	return func(data interface{}) error {
 		if user, ok := data.(*store.User); !ok {
-			return errors.New("not a user")
+			return errors.New("not a user") // TODO
 		} else {
 			return users.Save(user)
 		}
