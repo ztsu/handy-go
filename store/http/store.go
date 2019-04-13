@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"log"
 	"net/http"
@@ -50,17 +49,11 @@ func NewPostHandler(decode DecodeFunc, fn StorePostFunc) http.HandlerFunc {
 
 type GetIDFromContextFunc func(ctx context.Context) string
 
-type StoreGetFunc func(uuid.UUID) (interface{}, error)
+type StoreGetFunc func(string) (interface{}, error)
 
 func NewGetHandler(getID GetIDFromContextFunc, fn StoreGetFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(getID(r.Context()))
-		if err != nil {
-			ErrCantParseID.WriteTo(w)
-			return
-		}
-
-		res, err := fn(uuid.UUID(id))
+		res, err := fn(getID(r.Context()))
 		if err != nil {
 			ConvertStoreErrorToJSONError(err).WriteTo(w)
 			return
@@ -74,12 +67,6 @@ type StorePutFunc func(interface{}) error
 
 func NewPutHandler(getID GetIDFromContextFunc, decode DecodeFunc, fn StorePutFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(getID(r.Context()))
-		if err != nil {
-			ErrCantParseID.WriteTo(w)
-			return
-		}
-
 		data, err := decode(r)
 		if err != nil {
 			ConvertStoreErrorToJSONError(err).WriteTo(w)
@@ -89,7 +76,7 @@ func NewPutHandler(getID GetIDFromContextFunc, decode DecodeFunc, fn StorePutFun
 		if idty, ok := data.(store.Identity); !ok {
 			ErrInternalServerError.WriteTo(w)
 			return
-		} else if idty.Identity() != id {
+		} else if idty.Identity() != getID(r.Context()) {
 			ErrIdentityMismatch.WriteTo(w)
 			return
 		}
@@ -104,17 +91,11 @@ func NewPutHandler(getID GetIDFromContextFunc, decode DecodeFunc, fn StorePutFun
 	}
 }
 
-type StoreDeleteFunc func(uuid.UUID) error
+type StoreDeleteFunc func(string) error
 
 func NewDeleteHandler(getID GetIDFromContextFunc, fn StoreDeleteFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(getID(r.Context()))
-		if err != nil {
-			ErrCantParseID.WriteTo(w)
-			return
-		}
-
-		err = fn(id)
+		err := fn(getID(r.Context()))
 		if err != nil {
 			ConvertStoreErrorToJSONError(err).WriteTo(w)
 			return

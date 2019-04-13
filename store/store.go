@@ -2,68 +2,67 @@ package store
 
 import (
 	"errors"
-	original "github.com/google/uuid"
 )
 
 type Identity interface {
-	Identity() original.UUID
+	Identity() string
 }
 
 type User struct {
-	ID    original.UUID `json:"id"`
-	Email string        `json:"email"`
+	ID    string `json:"id"`
+	Email string `json:"email"`
 }
 
-func (user *User) Identity() original.UUID {
+func (user *User) Identity() string {
 	return user.ID
 }
 
 type Card struct {
-	ID     original.UUID `json:"id"`
-	DeckID original.UUID `json:"deckId"`
-	Type   string        `json:"type"`
-	Viewed uint64        `json:"viewed"`
-	Opened uint64        `json:"opened"`
+	ID     string `json:"id"`
+	DeckID string `json:"deckId"`
+	Type   string `json:"type"`
+	Viewed uint64 `json:"viewed"`
+	Opened uint64 `json:"opened"`
 }
 
 type Deck struct {
-	ID          original.UUID `json:"id"`
-	UserID      original.UUID `json:"userId"`
-	Name        string        `json:"name"`
-	TypeOfCards string        `json:"typeOfCards"`
+	ID          string `json:"id"`
+	UserID      string `json:"userId"`
+	Name        string `json:"name"`
+	TypeOfCards string `json:"typeOfCards"`
 }
 
 type Translation struct {
-	ID          original.UUID `json:"uuid"`
-	From        string        `json:"from"`
-	To          string        `json:"to"`
-	Word        string        `json:"word"`
-	Translation string        `json:"translation"`
-	IPA         string        `json:"ipa"`
+	ID          string `json:"id"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Word        string `json:"word"`
+	Translation string `json:"translation"`
+	IPA         string `json:"ipa"`
 }
 
 type CardStore interface {
-	Get(original.UUID) (Card, error)
+	Get(string) (Card, error)
 	Save(Card) error
 }
 
 type DeckStore interface {
-	Get(original.UUID) (Deck, error)
+	Get(string) (Deck, error)
 	Save(Deck) error
 	Delete(Deck) error
 }
 
 type TranslationStore interface {
-	Get(original.UUID) (Translation, error)
+	Get(string) (Translation, error)
 	Save(*Translation) error
-	Delete(original.UUID) error
+	Delete(string) error
 }
 
 type UserStore interface {
 	Add(*User) error
-	Get(original.UUID) (*User, error)
+	Get(string) (*User, error)
 	Save(*User) error
-	Delete(original.UUID) error
+	Delete(string) error
 }
 
 var (

@@ -3,17 +3,16 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"net/http"
 )
 
 func GetTranslation(translations store.TranslationStore) StoreGetFunc {
-	return func(id uuid.UUID) (interface{}, error) { return translations.Get(id) }
+	return func(id string) (interface{}, error) { return translations.Get(id) }
 }
 
 func DeleteTranslation(translations store.TranslationStore) StoreDeleteFunc {
-	return func(id uuid.UUID) error { return translations.Delete(id) }
+	return func(id string) error { return translations.Delete(id) }
 }
 
 func DecodeTranslation(r *http.Request) (interface{}, error) {

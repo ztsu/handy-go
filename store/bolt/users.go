@@ -2,7 +2,6 @@ package bolt
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"go.etcd.io/bbolt"
 )
@@ -33,14 +32,11 @@ func NewUserBoltStore(db *bbolt.DB) (*UserBoltStore, error) {
 	return ts, nil
 }
 
-func (us *UserBoltStore) Get(id uuid.UUID) (*store.User, error) {
+func (us *UserBoltStore) Get(id string) (*store.User, error) {
 	user := &store.User{}
 
 	return user, us.db.View(func(tx *bbolt.Tx) error {
-		key, err := id.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(id)
 
 		b := tx.Bucket([]byte(UsersBucketName)).Get(key)
 
@@ -54,10 +50,7 @@ func (us *UserBoltStore) Get(id uuid.UUID) (*store.User, error) {
 
 func (us *UserBoltStore) Add(u *store.User) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
-		key, err := u.ID.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(u.ID)
 
 		b := tx.Bucket([]byte(UsersBucketName)).Get(key)
 		if len(b) != 0 {
@@ -75,10 +68,7 @@ func (us *UserBoltStore) Add(u *store.User) error {
 
 func (us *UserBoltStore) Save(u *store.User) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
-		key, err := u.ID.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(u.ID)
 
 		if len(tx.Bucket([]byte(UsersBucketName)).Get(key)) == 0 {
 			return store.ErrUserNotFound
@@ -93,12 +83,9 @@ func (us *UserBoltStore) Save(u *store.User) error {
 	})
 }
 
-func (us *UserBoltStore) Delete(id uuid.UUID) error {
+func (us *UserBoltStore) Delete(id string) error {
 	return us.db.Update(func(tx *bbolt.Tx) error {
-		key, err := id.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(id)
 
 		if len(tx.Bucket([]byte(UsersBucketName)).Get(key)) == 0 {
 			return store.ErrUserNotFound

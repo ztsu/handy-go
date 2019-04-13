@@ -2,7 +2,5 @@ github.com/aws/aws-lambda-go v1.8.2 h1:wC8KcAG9HyVkFjbKQ9uhp87UGZutlPn9IJPq9fYM2
 github.com/aws/aws-lambda-go v1.8.2/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPOG+ouzmE1A=
 github.com/go-chi/chi v4.0.1+incompatible h1:RSRC5qmFPtO90t7pTL0DBMNpZFsb/sHF3RXVlDgFisA=
 github.com/go-chi/chi v4.0.1+incompatible/go.mod h1:eB3wogJHnLi3x/kFX2A+IbTBlXxmMeXJVKy9tTv1XzQ=
-github.com/google/uuid v1.1.0 h1:Jf4mxPC/ziBnoPIdpQdPJ9OeiomAUHLvxmPRSPH9m4s=
-github.com/google/uuid v1.1.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 go.etcd.io/bbolt v1.3.2 h1:Z/90sZLPOeCy2PwprqkFa25PdkusRzaj9P8zm/KNyvk=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=

@@ -2,7 +2,6 @@ package bolt
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"go.etcd.io/bbolt"
 )
@@ -33,14 +32,11 @@ func NewTranslationsBboltStore(db *bbolt.DB) (*TranslationsBboltStore, error) {
 	return ts, nil
 }
 
-func (ts *TranslationsBboltStore) Get(id uuid.UUID) (store.Translation, error) {
+func (ts *TranslationsBboltStore) Get(id string) (store.Translation, error) {
 	tr := store.Translation{}
 
 	return tr, ts.db.View(func(tx *bbolt.Tx) error {
-		key, err := id.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(id)
 
 		b := tx.Bucket([]byte(TranslationsBucketName)).Get(key)
 
@@ -48,12 +44,9 @@ func (ts *TranslationsBboltStore) Get(id uuid.UUID) (store.Translation, error) {
 	})
 }
 
-func (ts *TranslationsBboltStore) Delete(id uuid.UUID) error {
+func (ts *TranslationsBboltStore) Delete(id string) error {
 	return ts.db.Update(func(tx *bbolt.Tx) error {
-		key, err := id.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(id)
 
 		return tx.Bucket([]byte(TranslationsBucketName)).Delete(key)
 	})
@@ -61,10 +54,7 @@ func (ts *TranslationsBboltStore) Delete(id uuid.UUID) error {
 
 func (ts *TranslationsBboltStore) Save(tr *store.Translation) error {
 	return ts.db.Update(func(tx *bbolt.Tx) error {
-		key, err := tr.ID.MarshalBinary()
-		if err != nil {
-			return err
-		}
+		key := []byte(tr.ID)
 
 		value, err := json.Marshal(tr)
 		if err != nil {

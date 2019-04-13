@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/google/uuid"
 	"github.com/ztsu/handy-go/store"
 	"net/http"
 )
@@ -30,7 +29,7 @@ func PostUser(users store.UserStore) StorePostFunc {
 }
 
 func GetUser(users store.UserStore) StoreGetFunc {
-	return func(id uuid.UUID) (interface{}, error) { return users.Get(id) }
+	return func(id string) (interface{}, error) { return users.Get(id) }
 }
 
 func PutUser(users store.UserStore) StorePutFunc {
@@ -44,5 +43,5 @@ func PutUser(users store.UserStore) StorePutFunc {
 }
 
 func DeleteUser(users store.UserStore) StoreDeleteFunc {
-	return func(id uuid.UUID) error { return users.Delete(id) }
+	return func(id string) error { return users.Delete(id) }
 }
