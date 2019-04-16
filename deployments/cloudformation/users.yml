@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  HandyUsersLambda:
+    DependsOn: HandyUsersExecutionRole
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: HandyUsers
+      Handler: handy-lambda-users
+      Runtime: go1.x
+      Tracing: Active
+      CodeUri: .
+      Role: !GetAtt HandyUsersExecutionRole.Arn
+
+
+  HandyUsersExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service:
+              - "lambda.amazonaws.com"
+          Action:
+            - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"

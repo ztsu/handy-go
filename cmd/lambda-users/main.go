@@ -20,10 +20,11 @@ var cors = map[string]string{
 
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
+	users := []store.User{
+		{ID: "test", Email: "test@example.org"},
+	}
 
-	decks := []store.Deck{}
-
-	b, err := json.Marshal(decks)
+	b, err := json.Marshal(users)
 	if err != nil {
 		return Response{StatusCode: 500}, nil
 	}
