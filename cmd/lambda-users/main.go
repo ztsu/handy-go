@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/ztsu/handy-go/store"
@@ -20,6 +21,7 @@ var cors = map[string]string{
 
 // HandleRequest handles the Request req
 func HandleRequest(ctx context.Context, req Request) (Response, error) {
+	fmt.Printf("Request: %#v", req)
 	users := []store.User{
 		{ID: "test", Email: "test@example.org"},
 	}

@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: HandyUsers
-      Handler: handy-lambda-users
+      Handler: lambda-users
       Runtime: go1.x
       Tracing: Active
       CodeUri: .
