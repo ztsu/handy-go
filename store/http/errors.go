@@ -39,17 +39,18 @@ func (err *JsonError) WriteTo(w http.ResponseWriter) {
 
 var (
 	ErrInternalServerError = NewJsonError("internal server error", http.StatusInternalServerError)
-	ErrCantParseID         = NewJsonError("can't parse id", http.StatusBadRequest)
 	ErrCantParseJson       = NewJsonError("can't parse json", http.StatusUnprocessableEntity)
 	ErrIdentityMismatch    = NewJsonError("identity mismatch", http.StatusBadRequest)
 
 	ErrUserNotFound      = NewJsonError("user not found", http.StatusNotFound)
 	ErrUserAlreadyExists = NewJsonError("user already exists", http.StatusBadRequest)
+	ErrUserUnprocessable = NewJsonError("user is unprocessable", http.StatusUnprocessableEntity)
 )
 
 var storeToJSONErrorMapping = map[error]*JsonError{
 	store.ErrUserNotFound:      ErrUserNotFound,
 	store.ErrUserAlreadyExists: ErrUserAlreadyExists,
+	store.ErrUserUnprocessable: ErrUserUnprocessable,
 }
 
 func ConvertStoreErrorToJSONError(err error) *JsonError {

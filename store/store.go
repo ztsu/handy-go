@@ -2,6 +2,7 @@ package store
 
 import (
 	"errors"
+	"github.com/go-playground/validator"
 )
 
 type Identity interface {
@@ -9,12 +10,25 @@ type Identity interface {
 }
 
 type User struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID    string `json:"id"    validate:"required"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 func (user *User) Identity() string {
 	return user.ID
+}
+
+func (user *User) Validate() error {
+	err := validator.New().Struct(user)
+	if _, ok := err.(*validator.InvalidValidationError); ok {
+		return err
+	}
+
+	if errs, ok := err.(validator.ValidationErrors); ok && len(errs) > 0 {
+		return ErrUserUnprocessable
+	}
+
+	return nil
 }
 
 type Card struct {
@@ -66,7 +80,8 @@ type UserStore interface {
 }
 
 var (
-	ErrUserAlreadyExists = errors.New("user already exists")
-	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists    = errors.New("user already exists")
+	ErrUserNotFound         = errors.New("user not found")
+	ErrUserUnprocessable    = errors.New("user is unprocessable")
 	ErrUserEmailNotProvided = errors.New("email not provided")
 )
