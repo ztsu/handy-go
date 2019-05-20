@@ -11,7 +11,7 @@ phases:
       - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
       - env
       - go get -u github.com/golang/lint/golint
-      - go get -u github.com/aws/aws-lambda-go/events go.etcd.io/bbolt
+      - go get -u github.com/aws/aws-lambda-go/events go.etcd.io/bbolt github.com/go-playground/validator
 
   pre_build:
     commands:
