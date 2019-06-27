@@ -5,10 +5,12 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/ztsu/handy-go/store/bolt"
+	"github.com/ztsu/handy-go/store/dynamodb"
 	store "github.com/ztsu/handy-go/store/http"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -24,7 +26,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	users, err := bolt.NewUserBoltStore(db)
+	//users, err := bolt.NewUserBoltStore(db)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
+	secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
+
+	users, err := dynamodb.NewUserDynamoDBStore(accessKeyID, secret)
 	if err != nil {
 		log.Fatal(err)
 	}

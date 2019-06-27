@@ -2,6 +2,7 @@ module github.com/ztsu/handy-go
 
 require (
 	github.com/aws/aws-lambda-go v1.10.0
+	github.com/aws/aws-sdk-go v1.19.34
 	github.com/go-chi/chi v4.0.1+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
