@@ -62,5 +62,7 @@ func ConvertStoreErrorToJSONError(err error) *JsonError {
 		return e
 	}
 
+	log.Println(err)
+
 	return ErrInternalServerError
 }
