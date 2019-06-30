@@ -1,0 +1,12 @@
+# .gqlgen.yml example
+#
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+
+exec:
+  filename: graphql.go
+  package: graphql
+
+model:
+  filename: models.go
+  package: graphql
