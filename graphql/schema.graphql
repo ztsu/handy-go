@@ -1,3 +1,5 @@
+scalar Test
+
 type User {
   id: String!
   email: String!
@@ -19,4 +21,5 @@ type Mutation {
 type MathMutation {
   inc(d: Int!): Int!
   dec(d: Int!): Int!
+  test(t: Test): Int!
 }

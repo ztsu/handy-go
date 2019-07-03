@@ -18,3 +18,8 @@ models:
         resolver: true
       dec:
         resolver: true
+      test:
+        resolver: true
+  Test:
+    model:
+      - github.com/ztsu/handy-go/graphql.Test

@@ -3,8 +3,9 @@
 package graphql
 
 type MathMutation struct {
-	Inc int `json:"inc"`
-	Dec int `json:"dec"`
+	Inc  int `json:"inc"`
+	Dec  int `json:"dec"`
+	Test int `json:"test"`
 }
 
 type RegisterUser struct {
