@@ -13,4 +13,10 @@ input RegisterUser {
 
 type Mutation {
   registerUser(user: RegisterUser!): User!
+  math: MathMutation!
+}
+
+type MathMutation {
+  inc(d: Int!): Int!
+  dec(d: Int!): Int!
 }

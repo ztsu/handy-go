@@ -2,6 +2,11 @@
 
 package graphql
 
+type MathMutation struct {
+	Inc int `json:"inc"`
+	Dec int `json:"dec"`
+}
+
 type RegisterUser struct {
 	Email string `json:"email"`
 }

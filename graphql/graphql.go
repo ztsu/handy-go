@@ -34,6 +34,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	MathMutation() MathMutationResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -42,7 +43,13 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	MathMutation struct {
+		Dec func(childComplexity int, d int) int
+		Inc func(childComplexity int, d int) int
+	}
+
 	Mutation struct {
+		Math         func(childComplexity int) int
 		RegisterUser func(childComplexity int, user RegisterUser) int
 	}
 
@@ -56,8 +63,13 @@ type ComplexityRoot struct {
 	}
 }
 
+type MathMutationResolver interface {
+	Inc(ctx context.Context, obj *MathMutation, d int) (int, error)
+	Dec(ctx context.Context, obj *MathMutation, d int) (int, error)
+}
 type MutationResolver interface {
 	RegisterUser(ctx context.Context, user RegisterUser) (*User, error)
+	Math(ctx context.Context) (*MathMutation, error)
 }
 type QueryResolver interface {
 	Version(ctx context.Context) (string, error)
@@ -77,6 +89,37 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "MathMutation.dec":
+		if e.complexity.MathMutation.Dec == nil {
+			break
+		}
+
+		args, err := ec.field_MathMutation_dec_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.MathMutation.Dec(childComplexity, args["d"].(int)), true
+
+	case "MathMutation.inc":
+		if e.complexity.MathMutation.Inc == nil {
+			break
+		}
+
+		args, err := ec.field_MathMutation_inc_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.MathMutation.Inc(childComplexity, args["d"].(int)), true
+
+	case "Mutation.math":
+		if e.complexity.Mutation.Math == nil {
+			break
+		}
+
+		return e.complexity.Mutation.Math(childComplexity), true
 
 	case "Mutation.registerUser":
 		if e.complexity.Mutation.RegisterUser == nil {
@@ -188,12 +231,46 @@ input RegisterUser {
 
 type Mutation {
   registerUser(user: RegisterUser!): User!
+  math: MathMutation!
+}
+
+type MathMutation {
+  inc(d: Int!): Int!
+  dec(d: Int!): Int!
 }`},
 )
 
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_MathMutation_dec_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["d"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["d"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_MathMutation_inc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["d"]; ok {
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["d"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_registerUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -259,6 +336,94 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _MathMutation_inc(ctx context.Context, field graphql.CollectedField, obj *MathMutation) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "MathMutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_MathMutation_inc_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MathMutation().Inc(rctx, obj, args["d"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MathMutation_dec(ctx context.Context, field graphql.CollectedField, obj *MathMutation) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "MathMutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_MathMutation_dec_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MathMutation().Dec(rctx, obj, args["d"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_registerUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
@@ -301,6 +466,43 @@ func (ec *executionContext) _Mutation_registerUser(ctx context.Context, field gr
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNUser2ᚖgithubᚗcomᚋztsuᚋhandyᚑgoᚋgraphqlᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_math(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Math(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*MathMutation)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNMathMutation2ᚖgithubᚗcomᚋztsuᚋhandyᚑgoᚋgraphqlᚐMathMutation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_version(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1666,6 +1868,56 @@ func (ec *executionContext) unmarshalInputRegisterUser(ctx context.Context, obj 
 
 // region    **************************** object.gotpl ****************************
 
+var mathMutationImplementors = []string{"MathMutation"}
+
+func (ec *executionContext) _MathMutation(ctx context.Context, sel ast.SelectionSet, obj *MathMutation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, mathMutationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MathMutation")
+		case "inc":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MathMutation_inc(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "dec":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MathMutation_dec(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -1683,6 +1935,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "registerUser":
 			out.Values[i] = ec._Mutation_registerUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "math":
+			out.Values[i] = ec._Mutation_math(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2030,6 +2287,34 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	return graphql.UnmarshalInt(v)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNMathMutation2githubᚗcomᚋztsuᚋhandyᚑgoᚋgraphqlᚐMathMutation(ctx context.Context, sel ast.SelectionSet, v MathMutation) graphql.Marshaler {
+	return ec._MathMutation(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMathMutation2ᚖgithubᚗcomᚋztsuᚋhandyᚑgoᚋgraphqlᚐMathMutation(ctx context.Context, sel ast.SelectionSet, v *MathMutation) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._MathMutation(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNRegisterUser2githubᚗcomᚋztsuᚋhandyᚑgoᚋgraphqlᚐRegisterUser(ctx context.Context, v interface{}) (RegisterUser, error) {

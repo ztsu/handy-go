@@ -10,3 +10,11 @@ exec:
 model:
   filename: models.go
   package: graphql
+
+models:
+  MathMutation:
+    fields:
+      inc:
+        resolver: true
+      dec:
+        resolver: true
