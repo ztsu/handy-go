@@ -43,33 +43,6 @@ func NewUserDynamoDBStore(accessKeyID, secret string) (*UserDynamoDBStore, error
 	return &UserDynamoDBStore{db}, nil
 }
 
-func (store *UserDynamoDBStore) Get(id string) (*handy.User, error) {
-	input := &dynamodb.GetItemInput{
-		TableName: aws.String(usersTableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {S: aws.String(id)},
-		},
-	}
-
-	output, err := store.db.GetItem(input)
-	if err != nil {
-		return nil, err
-	}
-
-	user := &handy.User{}
-
-	err = dynamodbattribute.UnmarshalMap(output.Item, user)
-	if err != nil {
-		return nil, err
-	}
-
-	if user.ID == "" {
-		return nil, handy.ErrUserNotFound
-	}
-
-	return user, nil
-}
-
 func (store *UserDynamoDBStore) Add(user *handy.User) error {
 	userAv, err := dynamodbattribute.MarshalMap(user)
 	if err != nil {
@@ -121,6 +94,34 @@ func (store *UserDynamoDBStore) Add(user *handy.User) error {
 	return nil
 }
 
+func (store *UserDynamoDBStore) Get(id string) (*handy.User, error) {
+	input := &dynamodb.GetItemInput{
+		TableName: aws.String(usersTableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {S: aws.String(id)},
+		},
+		ProjectionExpression: aws.String("id,email"),
+	}
+
+	output, err := store.db.GetItem(input)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &handy.User{}
+
+	err = dynamodbattribute.UnmarshalMap(output.Item, user)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.ID == "" {
+		return nil, handy.ErrUserNotFound
+	}
+
+	return user, nil
+}
+
 func (store *UserDynamoDBStore) Save(user *handy.User) error {
 	existed, err := store.Get(user.ID)
 	if err != nil {
@@ -144,7 +145,6 @@ func (store *UserDynamoDBStore) Save(user *handy.User) error {
 	txInp := &dynamodb.TransactWriteItemsInput{
 		TransactItems: []*dynamodb.TransactWriteItem{
 			{Put: putUser},
-			//,
 		},
 	}
 

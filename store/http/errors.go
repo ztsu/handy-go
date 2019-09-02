@@ -42,12 +42,18 @@ var (
 	ErrCantParseJson       = NewJsonError("can't parse json", http.StatusUnprocessableEntity)
 	ErrIdentityMismatch    = NewJsonError("identity mismatch", http.StatusBadRequest)
 
+	ErrDeckNotFound      = NewJsonError("deck not found", http.StatusNotFound)
+	ErrDeckAlreadyExists = NewJsonError("deck already exists", http.StatusBadRequest)
+
 	ErrUserNotFound      = NewJsonError("user not found", http.StatusNotFound)
 	ErrUserAlreadyExists = NewJsonError("user already exists", http.StatusBadRequest)
 	ErrUserUnprocessable = NewJsonError("user is unprocessable", http.StatusUnprocessableEntity)
 )
 
 var storeToJSONErrorMapping = map[error]*JsonError{
+	store.ErrDeckNotFound:      ErrDeckNotFound,
+	store.ErrDeckAlreadyExists: ErrDeckAlreadyExists,
+
 	store.ErrUserNotFound:      ErrUserNotFound,
 	store.ErrUserAlreadyExists: ErrUserAlreadyExists,
 	store.ErrUserUnprocessable: ErrUserUnprocessable,

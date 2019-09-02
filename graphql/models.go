@@ -2,6 +2,16 @@
 
 package graphql
 
+type CreateDeck struct {
+	Name string `json:"name"`
+}
+
+type Deck struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	User *User  `json:"user"`
+}
+
 type RegisterUser struct {
 	Email string `json:"email"`
 }

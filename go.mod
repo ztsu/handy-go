@@ -12,6 +12,7 @@ require (
 	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/matoous/go-nanoid v0.0.0-20190515092250-e998f83de84d
+	github.com/pkg/errors v0.8.1
 	github.com/vektah/gqlparser v1.1.2
 	go.etcd.io/bbolt v1.3.2
 	golang.org/x/arch v0.0.0-20190312162104-788fe5ffcd8c // indirect

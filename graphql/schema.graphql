@@ -1,16 +1,27 @@
+type Query {
+  version: String!
+}
+
+type Mutation {
+  registerUser(user: RegisterUser!): User!
+  createDeck(deck: CreateDeck!): Deck!
+}
+
 type User {
   id: String!
   email: String!
 }
 
-type Query {
-  version: String!
+type Deck {
+  id: ID!
+  name: String!
+  user: User!
 }
 
 input RegisterUser {
   email: String!
 }
 
-type Mutation {
-  registerUser(user: RegisterUser!): User!
+input CreateDeck {
+  name: String!
 }

@@ -74,6 +74,7 @@ func NewPutHandler(getID GetIDFromContextFunc, decode DecodeFunc, fn StorePutFun
 		}
 
 		if idty, ok := data.(store.Identity); !ok {
+			// @todo log this error
 			ErrInternalServerError.WriteTo(w)
 			return
 		} else if idty.Identity() != getID(r.Context()) {

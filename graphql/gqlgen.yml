@@ -10,3 +10,9 @@ exec:
 model:
   filename: models.go
   package: graphql
+
+models:
+  Deck:
+    fields:
+      user:
+        resolver: true

@@ -31,47 +31,6 @@ func (user *User) Validate() error {
 	return nil
 }
 
-type Card struct {
-	ID     string `json:"id"`
-	DeckID string `json:"deckId"`
-	Type   string `json:"type"`
-	Viewed uint64 `json:"viewed"`
-	Opened uint64 `json:"opened"`
-}
-
-type Deck struct {
-	ID          string `json:"id"`
-	UserID      string `json:"userId"`
-	Name        string `json:"name"`
-	TypeOfCards string `json:"typeOfCards"`
-}
-
-type Translation struct {
-	ID          string `json:"id"`
-	From        string `json:"from"`
-	To          string `json:"to"`
-	Word        string `json:"word"`
-	Translation string `json:"translation"`
-	IPA         string `json:"ipa"`
-}
-
-type CardStore interface {
-	Get(string) (Card, error)
-	Save(Card) error
-}
-
-type DeckStore interface {
-	Get(string) (Deck, error)
-	Save(Deck) error
-	Delete(Deck) error
-}
-
-type TranslationStore interface {
-	Get(string) (Translation, error)
-	Save(*Translation) error
-	Delete(string) error
-}
-
 type UserStore interface {
 	Add(*User) error
 	Get(string) (*User, error)
@@ -85,3 +44,53 @@ var (
 	ErrUserUnprocessable    = errors.New("user is unprocessable")
 	ErrUserEmailNotProvided = errors.New("email not provided")
 )
+
+type Deck struct {
+	ID     string `json:"id"`
+	UserID string `json:"userId"`
+	Name   string `json:"name"`
+}
+
+func (deck *Deck) Identity() string {
+	return deck.ID
+}
+
+type DeckStore interface {
+	Add(*Deck) error
+	Get(string) (*Deck, error)
+	Save(*Deck) error
+	Delete(string) error
+}
+
+var (
+	ErrDeckAlreadyExists = errors.New("deck already exists")
+	ErrDeckNotFound      = errors.New("deck not found")
+)
+
+type Card struct {
+	ID     string `json:"id"`
+	DeckID string `json:"deckId"`
+	Type   string `json:"type"`
+	Viewed uint64 `json:"viewed"`
+	Opened uint64 `json:"opened"`
+}
+
+type CardStore interface {
+	Get(string) (Card, error)
+	Save(Card) error
+}
+
+type Translation struct {
+	ID          string `json:"id"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Word        string `json:"word"`
+	Translation string `json:"translation"`
+	IPA         string `json:"ipa"`
+}
+
+type TranslationStore interface {
+	Get(string) (Translation, error)
+	Save(*Translation) error
+	Delete(string) error
+}

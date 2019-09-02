@@ -29,7 +29,7 @@ func DecodeTranslation(r *http.Request) (interface{}, error) {
 func PostTranslation(translations store.TranslationStore) StorePostFunc {
 	return func(data interface{}) error {
 		if tr, ok := data.(*store.Translation); !ok {
-			return errors.New("not a translation")
+			return errors.New("not a Translation")
 		} else {
 			return translations.Save(tr)
 		}

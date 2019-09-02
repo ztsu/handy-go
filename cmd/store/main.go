@@ -21,19 +21,20 @@ func main() {
 
 	defer db.Close()
 
+	accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
+	secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
+
+	decks, err := dynamodb.NewDeckDynamoDBStore(accessKeyID, secret)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	translations, err := bolt.NewTranslationsBboltStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//users, err := bolt.NewUserBoltStore(db)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
-	secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
-
 	users, err := dynamodb.NewUserDynamoDBStore(accessKeyID, secret)
 	if err != nil {
 		log.Fatal(err)
@@ -56,6 +57,21 @@ func main() {
 			"/{ID}",
 			store.NewDeleteHandler(store.GetID, store.DeleteTranslation(translations)),
 		)
+	})
+
+	r.Route("/decks", func(r chi.Router) {
+		r.Post("/", store.NewPostHandler(store.DecodeDeck, store.PostDeck(decks)))
+
+		r.Route("/{ID}", func(r chi.Router) {
+			r.Use(store.QueryStringID("ID"))
+
+			r.Get("/", store.NewGetHandler(store.GetID, store.GetDeck(decks)))
+
+			r.Put("/", store.NewPutHandler(store.GetID, store.DecodeDeck, store.PutDeck(decks)))
+
+			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteDeck(decks)))
+		})
+
 	})
 
 	r.Route("/users", func(r chi.Router) {

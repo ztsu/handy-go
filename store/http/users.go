@@ -21,7 +21,7 @@ func DecodeUser(r *http.Request) (interface{}, error) {
 func PostUser(users store.UserStore) StorePostFunc {
 	return func(data interface{}) error {
 		if user, ok := data.(*store.User); !ok {
-			return errors.New("not a user") // TODO
+			return errors.New("not a User")
 		} else {
 			return users.Add(user)
 		}
@@ -35,7 +35,7 @@ func GetUser(users store.UserStore) StoreGetFunc {
 func PutUser(users store.UserStore) StorePutFunc {
 	return func(data interface{}) error {
 		if user, ok := data.(*store.User); !ok {
-			return errors.New("not a user") // TODO
+			return errors.New("not a User")
 		} else {
 			return users.Save(user)
 		}
