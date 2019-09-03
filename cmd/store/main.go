@@ -1,16 +1,20 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/ztsu/handy-go/store/bolt"
 	"github.com/ztsu/handy-go/store/dynamodb"
 	store "github.com/ztsu/handy-go/store/http"
+	"github.com/ztsu/handy-go/store/postgres"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -21,8 +25,26 @@ func main() {
 
 	defer db.Close()
 
+	//
+
 	accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
 	secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
+
+	//
+
+	pg, err := sql.Open("postgres", os.Getenv("POSTGRES_DSN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//
+
+	//users, err := bolt.NewUserBoltStore(db)
+	//users, err := dynamodb.NewUserDynamoDBStore(accessKeyID, secret)
+	users, err := postgres.NewUserStorePostgres(pg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	decks, err := dynamodb.NewDeckDynamoDBStore(accessKeyID, secret)
 	if err != nil {
@@ -30,12 +52,6 @@ func main() {
 	}
 
 	translations, err := bolt.NewTranslationsBboltStore(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//users, err := bolt.NewUserBoltStore(db)
-	users, err := dynamodb.NewUserDynamoDBStore(accessKeyID, secret)
 	if err != nil {
 		log.Fatal(err)
 	}

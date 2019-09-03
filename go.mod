@@ -11,6 +11,7 @@ require (
 	github.com/google/pprof v0.0.0-20190502144155-8358a9778bd1 // indirect
 	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
+	github.com/lib/pq v1.2.0
 	github.com/matoous/go-nanoid v0.0.0-20190515092250-e998f83de84d
 	github.com/pkg/errors v0.8.1
 	github.com/vektah/gqlparser v1.1.2
