@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/ztsu/handy-go/store/bolt"
-	"github.com/ztsu/handy-go/store/dynamodb"
 	store "github.com/ztsu/handy-go/store/http"
 	"github.com/ztsu/handy-go/store/postgres"
 	"go.etcd.io/bbolt"
@@ -27,8 +26,8 @@ func main() {
 
 	//
 
-	accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
-	secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
+	//accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
+	//secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
 
 	//
 
@@ -46,7 +45,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	decks, err := dynamodb.NewDeckDynamoDBStore(accessKeyID, secret)
+	//decks, err := dynamodb.NewDeckDynamoDBStore(accessKeyID, secret)
+	decks, err := postgres.NewDeckStorePostgres(pg)
 	if err != nil {
 		log.Fatal(err)
 	}
