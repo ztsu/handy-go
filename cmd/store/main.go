@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/ztsu/handy-go/store/bolt"
 	store "github.com/ztsu/handy-go/store/http"
 	"github.com/ztsu/handy-go/store/postgres"
 	"go.etcd.io/bbolt"
@@ -24,13 +23,6 @@ func main() {
 
 	defer db.Close()
 
-	//
-
-	//accessKeyID := os.Getenv("DYNAMODB_ACCESS_KEY_ID")
-	//secret := os.Getenv("DYNAMODB_ACCESS_KEY_SECRET")
-
-	//
-
 	pg, err := sql.Open("postgres", os.Getenv("POSTGRES_DSN"))
 	if err != nil {
 		log.Fatal(err)
@@ -38,20 +30,22 @@ func main() {
 
 	//
 
-	//users, err := bolt.NewUserBoltStore(db)
-	//users, err := dynamodb.NewUserDynamoDBStore(accessKeyID, secret)
-	users, err := postgres.NewUserStorePostgres(pg)
+	cards, err := postgres.NewCardStorePostgres(pg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//decks, err := dynamodb.NewDeckDynamoDBStore(accessKeyID, secret)
+	deckCards, err := postgres.NewDeckCardStorePostgres(pg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	decks, err := postgres.NewDeckStorePostgres(pg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	translations, err := bolt.NewTranslationsBboltStore(db)
+	users, err := postgres.NewUserStorePostgres(pg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,18 +55,32 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Route("/translations", func(r chi.Router) {
-		r.Post("/", store.NewPostHandler(store.DecodeTranslation, store.PostTranslation(translations)))
+	r.Route("/cards", func(r chi.Router) {
+		r.Post("/", store.NewPostHandler(store.DecodeCard, store.PostCard(cards)))
 
-		r.Get(
-			"/{ID}",
-			store.NewGetHandler(store.GetID, store.GetTranslation(translations)),
-		)
+		r.Route("/{ID}", func(r chi.Router) {
+			r.Use(store.QueryStringID("ID"))
 
-		r.Delete(
-			"/{ID}",
-			store.NewDeleteHandler(store.GetID, store.DeleteTranslation(translations)),
-		)
+			r.Get("/", store.NewGetHandler(store.GetID, store.GetCard(cards)))
+
+			r.Put("/", store.NewPutHandler(store.GetID, store.DecodeCard, store.PutCard(cards)))
+
+			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteCard(cards)))
+		})
+	})
+
+	r.Route("/deck-cards", func(r chi.Router) {
+		r.Post("/", store.NewPostHandler(store.DecodeDeckCard, store.PostDeckCard(deckCards)))
+
+		r.Route("/{ID}", func(r chi.Router) {
+			r.Use(store.QueryStringID("ID"))
+
+			r.Get("/", store.NewGetHandler(store.GetID, store.GetDeckCard(deckCards)))
+
+			r.Put("/", store.NewPutHandler(store.GetID, store.DecodeDeckCard, store.PutDeckCard(deckCards)))
+
+			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteDeckCard(deckCards)))
+		})
 	})
 
 	r.Route("/decks", func(r chi.Router) {
@@ -87,7 +95,6 @@ func main() {
 
 			r.Delete("/", store.NewDeleteHandler(store.GetID, store.DeleteDeck(decks)))
 		})
-
 	})
 
 	r.Route("/users", func(r chi.Router) {

@@ -29,7 +29,7 @@ func (err *JsonError) WriteTo(w http.ResponseWriter) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-CardType", "application/json; charset=utf-8")
 	w.WriteHeader(err.Code)
 
 	if _, err := w.Write(b.Bytes()); err != nil {
@@ -42,6 +42,9 @@ var (
 	ErrCantParseJson       = NewJsonError("can't parse json", http.StatusUnprocessableEntity)
 	ErrIdentityMismatch    = NewJsonError("identity mismatch", http.StatusBadRequest)
 
+	ErrCardNotFound      = NewJsonError("card not found", http.StatusNotFound)
+	ErrCardAlreadyExists = NewJsonError("card already exists", http.StatusBadRequest)
+
 	ErrDeckNotFound      = NewJsonError("deck not found", http.StatusNotFound)
 	ErrDeckAlreadyExists = NewJsonError("deck already exists", http.StatusBadRequest)
 
@@ -51,6 +54,9 @@ var (
 )
 
 var storeToJSONErrorMapping = map[error]*JsonError{
+	store.ErrCardNotFound:      ErrCardNotFound,
+	store.ErrCardAlreadyExists: ErrCardAlreadyExists,
+
 	store.ErrDeckNotFound:      ErrDeckNotFound,
 	store.ErrDeckAlreadyExists: ErrDeckAlreadyExists,
 

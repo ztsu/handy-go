@@ -68,20 +68,8 @@ var (
 )
 
 type Card struct {
-	ID     string `json:"id"`
-	DeckID string `json:"deckId"`
-	Type   string `json:"type"`
-	Viewed uint64 `json:"viewed"`
-	Opened uint64 `json:"opened"`
-}
-
-type CardStore interface {
-	Get(string) (Card, error)
-	Save(Card) error
-}
-
-type Translation struct {
 	ID          string `json:"id"`
+	UserID      string `json:"userId"`
 	From        string `json:"from"`
 	To          string `json:"to"`
 	Word        string `json:"word"`
@@ -89,8 +77,34 @@ type Translation struct {
 	IPA         string `json:"ipa"`
 }
 
-type TranslationStore interface {
-	Get(string) (Translation, error)
-	Save(*Translation) error
+type CardStore interface {
+	Add(card *Card) error
+	Get(string) (*Card, error)
+	Save(*Card) error
 	Delete(string) error
 }
+
+var (
+	ErrCardAlreadyExists = errors.New("card already exists")
+	ErrCardNotFound      = errors.New("card not found")
+)
+
+type DeckCard struct {
+	ID     string `json:"id"`
+	DeckID string `json:"deckId"`
+	CardID string `json:"cardId"`
+	Views  uint64 `json:"views"`
+	Turns  uint64 `json:"Turns"`
+}
+
+type DeckCardStore interface {
+	Add(*DeckCard) error
+	Get(string) (*DeckCard, error)
+	Save(*DeckCard) error
+	Delete(string) error
+}
+
+var (
+	ErrDeckCardAlreadyExists = errors.New("card already exists in deck")
+	ErrDeckCardNotFound      = errors.New("card not found in deck")
+)
