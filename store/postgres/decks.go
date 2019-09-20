@@ -54,6 +54,10 @@ func (store *DeckStorePostgres) Save(deck *handy.Deck) error {
 	query := `UPDATE ` + decksTableName + ` SET "userId" = $2, "name" = $3 WHERE id = $1`
 	res, err := store.db.Exec(query, deck.ID, deck.UserID, deck.Name)
 	if err != nil {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == decksUserIdFKeyConstraint {
+			return handy.ErrUserNotFound
+		}
+
 		return err
 	}
 

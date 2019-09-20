@@ -77,6 +77,10 @@ type Card struct {
 	IPA         string `json:"ipa"`
 }
 
+func (card *Card) Identity() string {
+	return card.ID
+}
+
 type CardStore interface {
 	Add(card *Card) error
 	Get(string) (*Card, error)

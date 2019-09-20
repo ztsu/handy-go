@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"github.com/lib/pq"
-	"github.com/pkg/errors"
 	handy "github.com/ztsu/handy-go/store"
 )
 
@@ -53,7 +52,27 @@ func (store *CardStorePostgres) Get(id string) (*handy.Card, error) {
 }
 
 func (store *CardStorePostgres) Save(card *handy.Card) error {
-	return errors.New("not implemented yet")
+	query := `UPDATE ` + cardsTableName + `
+SET "userId" = $2, "from" = $3, "to" = $4, "word" = $5, "translation" = $6, "ipa" = $7
+WHERE id = $1`
+	res, err := store.db.Exec(query, card.ID, card.UserID, card.From, card.To, card.Word, card.Translation, card.IPA)
+	if err != nil {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == cardsUserIdFKeyConstraint {
+			return handy.ErrUserNotFound
+		}
+		return err
+	}
+
+	updated, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if updated == 0 {
+		return handy.ErrCardNotFound
+	}
+
+	return nil
 }
 
 func (store *CardStorePostgres) Delete(id string) error {
