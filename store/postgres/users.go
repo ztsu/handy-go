@@ -9,7 +9,7 @@ import (
 const (
 	usersTableName = "users"
 
-	usersPkeyConstraint = "users_pkey"
+	usersPKeyConstraint = "users_pkey"
 )
 
 type UserStorePostgres struct {
@@ -23,7 +23,7 @@ func NewUserStorePostgres(db *sql.DB) (*UserStorePostgres, error) {
 func (store *UserStorePostgres) Add(user *handy.User) error {
 	_, err := store.db.Exec("INSERT INTO users(id, email) VALUES($1, $2)", user.ID, user.Email)
 	if err != nil {
-		if err, ok := err.(*pq.Error); ok && err.Constraint == usersPkeyConstraint {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == usersPKeyConstraint {
 			return handy.ErrUserAlreadyExists
 		}
 

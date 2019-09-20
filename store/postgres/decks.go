@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/lib/pq"
 	handy "github.com/ztsu/handy-go/store"
 )
@@ -10,8 +9,8 @@ import (
 const (
 	decksTableName = "decks"
 
-	decksPkeyConstraint       = "decks_pkey"
-	decksUserIdFkeyConstraint = "decks_userId_fkey"
+	decksPKeyConstraint       = "decks_pkey"
+	decksUserIdFKeyConstraint = "decks_userId_fkey"
 )
 
 type DeckStorePostgres struct {
@@ -26,10 +25,10 @@ func (store *DeckStorePostgres) Add(deck *handy.Deck) error {
 	query := `INSERT INTO ` + decksTableName + `(id, "userId", "name") VALUES($1, $2, $3)`
 	_, err := store.db.Exec(query, deck.ID, deck.UserID, deck.Name)
 	if err != nil {
-		if err, ok := err.(*pq.Error); ok && err.Constraint == decksPkeyConstraint {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == decksPKeyConstraint {
 			return handy.ErrDeckAlreadyExists
 		}
-		if err, ok := err.(*pq.Error); ok && err.Constraint == decksUserIdFkeyConstraint {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == decksUserIdFKeyConstraint {
 			return handy.ErrUserNotFound
 		}
 
@@ -42,14 +41,11 @@ func (store *DeckStorePostgres) Add(deck *handy.Deck) error {
 func (store *DeckStorePostgres) Get(id string) (*handy.Deck, error) {
 	query := `SELECT id, "userId", "name" FROM ` + decksTableName + ` WHERE id = $1`
 	row := store.db.QueryRow(query, id)
-	println("qq")
 
 	deck, err := scanDeck(row)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, handy.ErrDeckNotFound
 	}
-	println("qz")
-	fmt.Printf("Err: %s\n", err)
 
 	return deck, err
 }

@@ -10,8 +10,8 @@ import (
 const (
 	cardsTableName = "cards"
 
-	cardsPkeyConstraint       = "cards_pkey"
-	cardsUserIdFkeyConstraint = "cards_userId_fkey"
+	cardsPKeyConstraint       = "cards_pkey"
+	cardsUserIdFKeyConstraint = "cards_userId_fkey"
 )
 
 type CardStorePostgres struct {
@@ -27,10 +27,10 @@ func (store *CardStorePostgres) Add(card *handy.Card) error {
 		`(id, "userId", "from", "to", "word", "translation", "ipa") VALUES($1, $2, $3, $4, $5, $6, $7)`
 	_, err := store.db.Exec(query, card.ID, card.UserID, card.From, card.To, card.Word, card.Translation, card.IPA)
 	if err != nil {
-		if err, ok := err.(*pq.Error); ok && err.Constraint == cardsPkeyConstraint {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == cardsPKeyConstraint {
 			return handy.ErrCardAlreadyExists
 		}
-		if err, ok := err.(*pq.Error); ok && err.Constraint == cardsUserIdFkeyConstraint {
+		if err, ok := err.(*pq.Error); ok && err.Constraint == cardsUserIdFKeyConstraint {
 			return handy.ErrUserNotFound
 		}
 
@@ -41,7 +41,15 @@ func (store *CardStorePostgres) Add(card *handy.Card) error {
 }
 
 func (store *CardStorePostgres) Get(id string) (*handy.Card, error) {
-	return nil, errors.New("not implemented yet")
+	query := `SELECT id, "userId", "from", "to", "word", "translation", "ipa" FROM ` + cardsTableName + ` WHERE id = $1`
+	row := store.db.QueryRow(query, id)
+
+	card, err := scanCard(row)
+	if err != nil && err == sql.ErrNoRows {
+		return nil, handy.ErrCardNotFound
+	}
+
+	return card, err
 }
 
 func (store *CardStorePostgres) Save(card *handy.Card) error {
@@ -65,4 +73,15 @@ func (store *CardStorePostgres) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func scanCard(row *sql.Row) (*handy.Card, error) {
+	card := &handy.Card{}
+
+	err := row.Scan(&card.ID, &card.UserID, &card.From, &card.To, &card.Word, &card.Translation, &card.IPA)
+	if err != nil {
+		return nil, err
+	}
+
+	return card, nil
 }
