@@ -1,18 +1,14 @@
-package main
+package http
 
 import (
 	"database/sql"
-	"fmt"
-	store "github.com/ztsu/handy-go/store/http"
+	"github.com/go-chi/chi"
 	"github.com/ztsu/handy-go/store/postgres"
 	"log"
-	"net/http"
 	"os"
-
-	_ "github.com/lib/pq"
 )
 
-func main() {
+func newMux() *chi.Mux {
 	pg, err := sql.Open("postgres", os.Getenv("POSTGRES_DSN"))
 	if err != nil {
 		log.Fatal(err)
@@ -38,14 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := store.NewRouter(cards, deckCards, decks, users)
+	r := NewRouter(cards, deckCards, decks, users)
 
-	addr := "0.0.0.0:8080"
-
-	fmt.Printf("Starting server at %s\n", addr)
-
-	err = http.ListenAndServe(addr, r)
-	if err != nil {
-		fmt.Printf("Can't start server: %s\n", err)
-	}
+	return r
 }
