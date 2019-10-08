@@ -6,24 +6,22 @@ import (
 	"net/http"
 )
 
-const QueryStringIDKey = "ID"
+const idCtxKey = "ID"
 
-func QueryStringID(paramName string) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := context.WithValue(r.Context(), QueryStringIDKey, chi.URLParam(r, paramName))
+func idCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), idCtxKey, chi.URLParam(r, "ID"))
 
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
-func GetID(ctx context.Context) string {
+func getIDCtx(ctx context.Context) string {
 	if ctx == nil {
 		return ""
 	}
 
-	if id, ok := ctx.Value(QueryStringIDKey).(string); ok {
+	if id, ok := ctx.Value(idCtxKey).(string); ok {
 		return id
 	}
 

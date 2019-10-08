@@ -40,7 +40,6 @@ func TestPostUser(t *testing.T) {
 		assert.Equal(t, http.StatusNoContent, resp.Code)
 	}
 
-
 	{
 		req, _ := http.NewRequest("GET", "/users/test-01", nil)
 		resp := httptest.NewRecorder()

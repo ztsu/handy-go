@@ -14,12 +14,12 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/matoous/go-nanoid v0.0.0-20190515092250-e998f83de84d
 	github.com/pkg/errors v0.8.1
+	github.com/prometheus/client_golang v1.1.0
 	github.com/stretchr/testify v1.4.0
 	github.com/vektah/gqlparser v1.1.2
 	go.etcd.io/bbolt v1.3.2
 	golang.org/x/arch v0.0.0-20190312162104-788fe5ffcd8c // indirect
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
-	golang.org/x/sys v0.0.0-20190509141414-a5b02f93d862 // indirect
 	golang.org/x/tools v0.0.0-20190515012406-7d7faa4812bd
 )
 
