@@ -34,7 +34,7 @@ func init() {
 	prometheus.MustRegister(requestTimer)
 }
 
-func Prom(next http.Handler) http.Handler {
+func PrometheusMiddleware(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
@@ -42,7 +42,6 @@ func Prom(next http.Handler) http.Handler {
 
 		defer func() {
 			ctx := chi.RouteContext(r.Context())
-
 			lvs := []string{
 				r.Method,
 				strings.TrimRight(ctx.RoutePattern(), "/"),

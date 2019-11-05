@@ -10,13 +10,26 @@ import (
 	"testing"
 )
 
-func TestUsers(t *testing.T) {
+func TestDecks(t *testing.T) {
+
 	mux := newMux()
 
-	b := bytes.NewBufferString(`{"id":"test-01","email":"test-01@example.org"}`)
+	u := bytes.NewBufferString(`{"id":"user-01","email":"user-01@example.org"}`)
 
 	{
-		req, _ := http.NewRequest("POST", "/users", b)
+		req, _ := http.NewRequest("POST", "/users", u)
+		resp := httptest.NewRecorder()
+
+		mux.ServeHTTP(resp, req)
+
+		assert.Equal(t, http.StatusCreated, resp.Code)
+	}
+
+
+	b := bytes.NewBufferString(`{"id":"deck-01","userId":"user-01","name":"Test deck"}`)
+
+	{
+		req, _ := http.NewRequest("POST", "/decks", b)
 		resp := httptest.NewRecorder()
 
 		mux.ServeHTTP(resp, req)
@@ -25,28 +38,20 @@ func TestUsers(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequest("GET", "/users/test-01", nil)
+		req, _ := http.NewRequest("DELETE", "/decks/deck-01", nil)
 		resp := httptest.NewRecorder()
 
 		mux.ServeHTTP(resp, req)
 
-		assert.Equal(t, http.StatusOK, resp.Code)
-	}
-
-	{
-		req, _ := http.NewRequest("DELETE", "/users/test-01", nil)
-		resp := httptest.NewRecorder()
-
-		mux.ServeHTTP(resp, req)
 		assert.Equal(t, http.StatusNoContent, resp.Code)
 	}
 
 	{
-		req, _ := http.NewRequest("GET", "/users/test-01", nil)
+		req, _ := http.NewRequest("DELETE", "/users/user-01", nil)
 		resp := httptest.NewRecorder()
 
 		mux.ServeHTTP(resp, req)
 
-		assert.Equal(t, http.StatusNotFound, resp.Code)
+		assert.Equal(t, http.StatusNoContent, resp.Code)
 	}
 }

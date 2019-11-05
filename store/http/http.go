@@ -23,7 +23,7 @@ func NewRouter(
 
 	r.Group(func(r chi.Router) {
 
-		r.Use(Prom)
+		r.Use(PrometheusMiddleware)
 
 		r.Route("/cards", func(r chi.Router) {
 			r.Post("/", NewPostHandler(DecodeCard, PostCard(cards)))
