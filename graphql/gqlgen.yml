@@ -3,12 +3,15 @@
 # Refer to https://gqlgen.com/config/
 # for detailed .gqlgen.yml documentation.
 
+schema:
+  - "../api/*.graphql"
+
 exec:
-  filename: graphql.go
+  filename: gqlgen_graphql.go
   package: graphql
 
 model:
-  filename: models.go
+  filename: gqlgen_models.go
   package: graphql
 
 models:

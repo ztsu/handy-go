@@ -1,0 +1,38 @@
+type Query {
+  version: String!
+}
+
+type Mutation {
+  registerUser(user: RegisterUserInput!): RegisterUserOutput!
+  createDeck(deck: CreateDeck!): Deck!
+}
+
+input RegisterUserInput {
+  email: String!
+}
+
+type RegisterUserOutput {
+  ok: Boolean!
+  user: User
+  errors: [Error!]
+}
+
+input CreateDeck {
+  name: String!
+}
+
+type User {
+  id: String!
+  email: String!
+}
+
+type Deck {
+  id: ID!
+  name: String!
+  user: User!
+}
+
+type Error {
+  code: String!
+  message: String!
+}

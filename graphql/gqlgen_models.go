@@ -12,8 +12,19 @@ type Deck struct {
 	User *User  `json:"user"`
 }
 
-type RegisterUser struct {
+type Error struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type RegisterUserInput struct {
 	Email string `json:"email"`
+}
+
+type RegisterUserOutput struct {
+	Ok     bool     `json:"ok"`
+	User   *User    `json:"user"`
+	Errors []*Error `json:"errors"`
 }
 
 type User struct {
